@@ -1,0 +1,313 @@
+24. Soal 1 Tabel
+Penyelesaian permasalahan terkait dengan database classic models yg bersifat single entity(soal 1 tabel)
+
+a. Tampilkan daftar office diurutkan berdasarkan country,state dan city
+mysql> SELECT officeCode,country,state,city FROM offices
+    -> ORDER BY country,state,city;
++------------+-----------+------------+---------------+
+| officeCode | country   | state      | city          |
++------------+-----------+------------+---------------+
+| 6          | Australia | NULL       | Sydney        |
+| 4          | France    | NULL       | Paris         |
+| 5          | Japan     | Chiyoda-Ku | Tokyo         |
+| 7          | UK        | NULL       | London        |
+| 1          | USA       | CA         | San Francisco |
+| 2          | USA       | MA         | Boston        |
+| 3          | USA       | NY         | NYC           |
++------------+-----------+------------+---------------+
+7 rows in set (0.00 sec)
+
+b. Ada berapa orang karyawan yang ada diperusahaan
+mysql> SELECT COUNT(*) FROM employees;
++----------+
+| COUNT(*) |
++----------+
+|       23 |
++----------+
+1 row in set (0.00 sec)
+
+mysql> SELECT COUNT(*) AS banyak_karyawan FROM employees;
++-----------------+
+| banyak_karyawan |
++-----------------+
+|              23 |
++-----------------+
+1 row in set (0.00 sec)
+
+c. Berapa total pembayaran yang telah diterima 
+mysql> SELECT SUM(amount) AS Total FROM payments;
++------------+
+| Total      |
++------------+
+| 8853839.23 |
++------------+
+1 row in set (0.00 sec)
+mysql> SELECT FORMAT(SUM(amount),2) AS Total FROM payments;
++--------------+
+| Total        |
++--------------+
+| 8,853,839.23 |
++--------------+
+1 row in set (0.00 sec)
+NB : Format Angka 2 angka dibelakang koma
+
+d. Tampilkan productLine yang mengandung kata Car
+mysql> SELECT productLine FROM productLines
+    -> WHERE productLine LIKE "%Car%";
++--------------+
+| productLine  |
++--------------+
+| Classic Cars |
+| Vintage Cars |
++--------------+
+2 rows in set (0.00 sec)
+
+e. Laporkan total pembayaran pada 28 oktober 2004
+mysql> SELECT SUM(amount) FROM payments
+    -> WHERE paymentDate = '2004-10-28';
++-------------+
+| SUM(amount) |
++-------------+
+|    47411.33 |
++-------------+
+1 row in set (0.00 sec)
+mysql> SELECT FORMAT(SUM(amount),0) FROM payments
+    -> WHERE paymentDate = '2004-10-28';
++-----------------------+
+| FORMAT(SUM(amount),0) |
++-----------------------+
+| 47,411                |
++-----------------------+
+1 row in set (0.00 sec)
+mysql> SELECT FORMAT(SUM(amount),0) AS Total FROM payments
+    -> WHERE paymentDate = '2004-10-28';
++--------+
+| Total  |
++--------+
+| 47,411 |
++--------+
+1 row in set (0.00 sec)
+
+f. Laporkan pembayaran yang lebih dari 100.000 pada tanggal tersebut(2004-10-28)
+mysql> SELECT * FROM payments
+    -> WHERE paymentDate = '2004-10-28' AND amount > 100000;
+Empty set (0.00 sec)
+NB : Tidak Ada pembayaran yang lebih dari 100.000 pada tanggal tersebut
+mysql> SELECT * FROM payments
+    -> WHERE amount > 100000;
+NB : Jika dihilangkan paymentDate nya
++----------------+-------------+-------------+-----------+
+| customerNumber | checkNumber | paymentDate | amount    |
++----------------+-------------+-------------+-----------+
+|            124 | AE215433    | 2005-03-05  | 101244.59 |
+|            124 | KI131716    | 2003-08-15  | 111654.40 |
+|            141 | ID10962     | 2004-12-31  | 116208.40 |
+|            141 | JE105477    | 2005-03-18  | 120166.58 |
+|            148 | KM172879    | 2003-12-26  | 105743.00 |
++----------------+-------------+-------------+-----------+
+5 rows in set (0.00 sec)
+
+g. Tampilkan setiap produk untuk setiap productLine
+mysql> SELECT productLine,productName From products
+    -> ORDER BY productLine;
++------------------+---------------------------------------------+
+| productLine      | productName                                 |
++------------------+---------------------------------------------+
+| Classic Cars     | 1952 Alpine Renault 1300                    |
+| Classic Cars     | 1972 Alfa Romeo GTA                         |
+| Classic Cars     | 1962 LanciaA Delta 16V                      |
+| Classic Cars     | 1968 Ford Mustang                           |
+| Classic Cars     | 2001 Ferrari Enzo                           |
+| Classic Cars     | 1969 Corvair Monza                          |
+| Classic Cars     | 1968 Dodge Charger                          |
+| Classic Cars     | 1969 Ford Falcon                            |
+| Classic Cars     | 1970 Plymouth Hemi Cuda                     |
+| Classic Cars     | 1969 Dodge Charger                          |
+| Classic Cars     | 1993 Mazda RX-7                             |
+| Classic Cars     | 1965 Aston Martin DB5                       |
+
+SELECT productLine,GROUP_CONCAT(productName) From products
+    -> GROUP BY productLine
+    -> ORDER BY productLine;                                                     |
+| Trucks and Buses | 1958 Setra Bus,1957 Chevy Pickup,1940 Ford Pickup Truck,1964 Mercedes Tour Bus,1926 Ford Fire Engine,1940s Ford truck,1962 Volkswagen Microbus,1980’s GM Manhattan Express,1954 Greyhound Scenicruiser,1996 Peterbilt 379 Stake Bed with Outrigger,Diamond T620 Semi-Skirted Tanker                                                      |
+| Ships            | 1999 Yamaha Speed Boat,18th century schooner,The Schooner Bluenose,The Mayflower,HMS Bounty,The USS Constitution Ship,The Titanic,The Queen Mary,Pont Yacht                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| Trains           | Collectable Wooden Train,1950's Chicago Surface Lines Streetcar,1962 City of Detroit Streetcar                                                                                                                                                                          
+NB : Hanya menampilkan 1 rows productLine dengan banyak productName
+
+h. Ada berapa produk di setiap productLine
+mysql> SELECT productLine,COUNT(*) AS Banyak_Produk FROM products
+    -> GROUP BY productLine;
++------------------+---------------+
+| productLine      | Banyak_Produk |
++------------------+---------------+
+| Classic Cars     |            38 |
+| Motorcycles      |            13 |
+| Planes           |            12 |
+| Ships            |             9 |
+| Trains           |             3 |
+| Trucks and Buses |            11 |
+| Vintage Cars     |            24 |
++------------------+---------------+
+7 rows in set (0.00 sec)
+
+i. Berapa pembayaran minimum yang diterima
+mysql> SELECT MIN(amount) FROM payments;
++-------------+
+| MIN(amount) |
++-------------+
+|      615.45 |
++-------------+
+1 row in set (0.00 sec)
+
+j. Tampilkan pembayaran yang lebih besar dari 2 kali rata - rata pembayaran
+mysql> SELECT AVG(amount)*2 FROM payments;
++---------------+
+| AVG(amount)*2 |
++---------------+
+|  64863.291062 |
++---------------+
+1 row in set (0.00 sec)
+
+mysql> SELECT * FROM payments WHERE amount >
+    -> (SELECT AVG(amount)*2 FROM payments);
++----------------+-------------+-------------+-----------+
+| customerNumber | checkNumber | paymentDate | amount    |
++----------------+-------------+-------------+-----------+
+|            114 | MA765515    | 2004-12-15  |  82261.22 |
+|            124 | AE215433    | 2005-03-05  | 101244.59 |
+|            124 | BG255406    | 2004-08-28  |  85410.87 |
+|            124 | ET64396     | 2005-04-16  |  83598.04 |
+|            124 | KI131716    | 2003-08-15  | 111654.40 |
+|            141 | ID10962     | 2004-12-31  | 116208.40 |
+|            141 | IN446258    | 2005-03-25  |  65071.26 |
+|            141 | JE105477    | 2005-03-18  | 120166.58 |
+|            148 | KM172879    | 2003-12-26  | 105743.00 |
+|            167 | GN228846    | 2003-12-03  |  85024.46 |
+|            239 | NQ865547    | 2004-03-15  |  80375.24 |
+|            321 | DJ15149     | 2003-11-03  |  85559.12 |
+|            323 | AL493079    | 2005-05-23  |  75020.13 |
++----------------+-------------+-------------+-----------+
+13 rows in set (0.00 sec)
+
+k. Berapa rata - rata keuntungan pada produk (MSRP - buyPrice)
+mysql> SELECT MSRP-buyPrice FROM products;
++---------------+
+| MSRP-buyPrice |
++---------------+
+|         46.89 |
+|        115.72 |
+|         49.95 |
+|        102.64 |
+|         50.32 |
+|         44.32 |
+|         99.23 |
+|        112.21 |
+|         58.77 |
+|         84.35 |
+|         61.94 |
+|         42.28 |
+|         89.97 |
+|         47.88 |
+mysql> SELECT AVG(MSRP-buyPrice) AS Rata_Keuntungan FROM products;
++-----------------+
+| Rata_Keuntungan |
++-----------------+
+|       46.043545 |
++-----------------+
+1 row in set (0.00 sec)
+l. Berapa banyak produk unik tanpa duplikat yang dijual classicmodels
+mysql> SELECT DISTINCT productLine FROM products;
++------------------+
+| productLine      |
++------------------+
+| Classic Cars     |
+| Motorcycles      |
+| Planes           |
+| Ships            |
+| Trains           |
+| Trucks and Buses |
+| Vintage Cars     |
++------------------+
+7 rows in set (0.05 sec)
+
+m. Tampilkan nama dan kota customer yang tidak memiliki sales representative
+mysql> SELECT customerName,city,salesRepEmployeeNumber FROM customers
+    -> WHERE salesRepEmployeeNumber IS NULL;
++--------------------------------+------------------+------------------------+
+| customerName                   | city             | salesRepEmployeeNumber |
++--------------------------------+------------------+------------------------+
+| Havel & Zbyszek Co             | Warszawa         |                   NULL |
+| Porto Imports Co.              | Lisboa           |                   NULL |
+| Asian Shopping Network, Co     | Singapore        |                   NULL |
+| Natürlich Autos                | Cunewalde        |                   NULL |
+| ANG Resellers                  | Madrid           |                   NULL |
+| Messner Shopping Network       | Frankfurt        |                   NULL |
+| Franken Gifts, Co              | München          |                   NULL |
+| BG&E Collectables              | Fribourg         |                   NULL |
+| Schuyler Imports               | Amsterdam        |                   NULL |
+| Der Hund Imports               | Berlin           |                   NULL |
+| Cramer Spezialitäten, Ltd      | Brandenburg      |                   NULL |
+| Asian Treasures, Inc.          | Cork             |                   NULL |
+| SAR Distributors, Co           | Hatfield         |                   NULL |
+| Kommission Auto                | Münster          |                   NULL |
+| Lisboa Souveniers, Inc         | Lisboa           |                   NULL |
+| Stuttgart Collectable Exchange | Stuttgart        |                   NULL |
+| Feuer Online Stores, Inc       | Leipzig          |                   NULL |
+| Warburg Exchange               | Aachen           |                   NULL |
+| Anton Designs, Ltd.            | Madrid           |                   NULL |
+| Mit Vergnügen & Co.            | Mannheim         |                   NULL |
+| Kremlin Collectables, Co.      | Saint Petersburg |                   NULL |
+| Raanan Stores, Inc             | Herzlia          |                   NULL |
++--------------------------------+------------------+------------------------+
+22 rows in set (0.00 sec)
+
+n. Tampilkan nama beserta jabatan dari employee dengan title VP atau Manager
+
+mysql> SELECT CONCAT(firstName," ",lastName) AS Nama,jobTitle FROM employees
+    -> WHERE jobTitle LIKE "%VP%" OR jobTitle LIKE "%Manager%";
++-------------------+----------------------+
+| Nama              | jobTitle             |
++-------------------+----------------------+
+| Mary Patterson    | VP Sales             |
+| Jeff Firrelli     | VP Marketing         |
+| William Patterson | Sales Manager (APAC) |
+| Gerard Bondur     | Sale Manager (EMEA)  |
+| Anthony Bow       | Sales Manager (NA)   |
++-------------------+----------------------+
+5 rows in set (0.00 sec)
+NB : Concat menyatukan 2 kolom yang berbeda
+
+o. Order mana yang bernilai lebih dari 5000
+
+mysql> SELECT orderNumber,SUM(priceEach*quantityOrdered) AS total_order
+    -> FROM orderdetails
+    -> GROUP BY orderNumber
+    -> HAVING total_order>5000;
++-------------+-------------+
+| orderNumber | total_order |
++-------------+-------------+
+|       10100 |    10223.83 |
+|       10101 |    10549.01 |
+|       10102 |     5494.78 |
+|       10103 |    50218.95 |
+|       10104 |    40206.20 |
+|       10105 |    53959.21 |
+|       10106 |    52151.81 |
+|       10107 |    22292.62 |
+|       10108 |    51001.22 |
+|       10109 |    25833.14 |
+|       10110 |    48425.69 |
+|       10111 |    16537.85 |
+|       10112 |     7674.94 |
+|       10113 |    11044.30 |
+|       10114 |    33383.14 |
+|       10115 |    21665.98 |
+|       10117 |    44380.15 |
+|       10119 |    35826.33 |
+|       10120 |    45864.03 |
+|       10121 |    16700.47 |
+|       10122 |    50824.66 |
+|       10123 |    14571.44 |
+|       10124 |    32641.98 |
+|       10125 |     7565.08 |
+|       10126 |    57131.92 | 

@@ -1,0 +1,86 @@
+10. Import
+Download file
+http://www.mysqltutorial.org/mysql-sample-database-aspx/
+	-Extract file 
+	-Buka localhost/phpmyadmin
+	-Import
+	-ChooseFile Sample database.sql
+	-Kirim
+
+11. Select Limit
+show tables;
++-------------------------+
+| Tables_in_classicmodels |
++-------------------------+
+| customers               |
+| employees               |
+| offices                 |
+| orderdetails            |
+| orders                  |
+| payments                |
+| productlines            |
+| products                |
++-------------------------+
+mysql> SELECT * from products; (Mengambil data semua kolom dari tabel products)
+mysql> describe products;
++--------------------+---------------+------+-----+---------+-------+
+| Field              | Type          | Null | Key | Default | Extra |
++--------------------+---------------+------+-----+---------+-------+
+| productCode        | varchar(15)   | NO   | PRI | NULL    |       |
+| productName        | varchar(70)   | NO   |     | NULL    |       |
+| productLine        | varchar(50)   | NO   | MUL | NULL    |       |
+| productScale       | varchar(10)   | NO   |     | NULL    |       |
+| productVendor      | varchar(50)   | NO   |     | NULL    |       |
+| productDescription | text          | NO   |     | NULL    |       |
+| quantityInStock    | smallint(6)   | NO   |     | NULL    |       |
+| buyPrice           | decimal(10,2) | NO   |     | NULL    |       |
+| MSRP               | decimal(10,2) | NO   |     | NULL    |       |
++--------------------+---------------+------+-----+---------+-------+
+mysql>SELECT productCode,productName FROM products; (Mengambil data kolom productCode,productName dari tabel products)
+
+mysql> SELECT productCode,productName FROM products LIMIT 10;(Mengambil 10 data kolom productCode,productName berdasarkan data ke 1 dari tabel products)
++-------------+---------------------------------------+
+| productCode | productName                           |
++-------------+---------------------------------------+
+| S10_1678    | 1969 Harley Davidson Ultimate Chopper |
+| S10_1949    | 1952 Alpine Renault 1300              |
+| S10_2016    | 1996 Moto Guzzi 1100i                 |
+| S10_4698    | 2003 Harley-Davidson Eagle Drag Bike  |
+| S10_4757    | 1972 Alfa Romeo GTA                   |
+| S10_4962    | 1962 LanciaA Delta 16V                |
+| S12_1099    | 1968 Ford Mustang                     |
+| S12_1108    | 2001 Ferrari Enzo                     |
+| S12_1666    | 1958 Setra Bus                        |
+| S12_2823    | 2002 Suzuki XREO                      |
++-------------+---------------------------------------+
+10 rows in set (0.00 sec)
+
+mysql> SELECT productCode AS kode,productName AS nama FROM products LIMIT 10;(Mengganti Atribut dengan AS(alias) kode dan nama)
++----------+---------------------------------------+
+| kode     | nama                                  |
++----------+---------------------------------------+
+| S10_1678 | 1969 Harley Davidson Ultimate Chopper |
+| S10_1949 | 1952 Alpine Renault 1300              |
+| S10_2016 | 1996 Moto Guzzi 1100i                 |
+| S10_4698 | 2003 Harley-Davidson Eagle Drag Bike  |
+| S10_4757 | 1972 Alfa Romeo GTA                   |
+| S10_4962 | 1962 LanciaA Delta 16V                |
+| S12_1099 | 1968 Ford Mustang                     |
+| S12_1108 | 2001 Ferrari Enzo                     |
+| S12_1666 | 1958 Setra Bus                        |
+| S12_2823 | 2002 Suzuki XREO                      |
++----------+---------------------------------------+
+10 rows in set (0.00 sec)
+
+mysql> SELECT productCode,productName FROM products
+    -> LIMIT 10,5; (Mengambil 5 data kolom productCode,productName berdasarkan data ke 10 dari tabel products)
++-------------+-------------------------+
+| productCode | productName             |
++-------------+-------------------------+
+| S12_3148    | 1969 Corvair Monza      |
+| S12_3380    | 1968 Dodge Charger      |
+| S12_3891    | 1969 Ford Falcon        |
+| S12_3990    | 1970 Plymouth Hemi Cuda |
+| S12_4473    | 1957 Chevy Pickup       |
++-------------+-------------------------+
+5 rows in set (0.00 sec)

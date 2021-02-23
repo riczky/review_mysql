@@ -1,0 +1,62 @@
+7. Insert
+Fungsinya untuk memasukkan data ke dalam tabel.
+Perintah: SELECT * FROM satuan; (Menampilkan data dari semua kolom satuan)
++------------+-------------+------+-----+---------+----------------+
+| Field      | Type        | Null | Key | Default | Extra          |
++------------+-------------+------+-----+---------+----------------+
+| satuanId   | int(11)     | NO   | PRI | NULL    | auto_increment |
+| satuanNama | varchar(30) | NO   |     | NULL    |                |
++------------+-------------+------+-----+---------+----------------+
+	 INSERT INTO satuan VALUES (NULL,"pcs"); (Memasukkan data pcs ke tabel satuan)
+	 INSERT INTO satuan (satuanNama) VALUES ('KG'); (Memasukkan data satuanNama ke tabel satuan jika id Auto_increment)
+	 INSERT INTO satuan (satuanNama) VALUES ('liter'),('buah'); (Memasukka  data 2 sekaligus)
++----------+------------+
+| satuanId | satuanNama |
++----------+------------+
+|        1 | pcs        |
+|        2 | KG         |
+|        3 | liter      |
+|        4 | buah       |
++----------+------------+
+8. Update
++----------+---------------+----------------------------------+------------+------------+-------------+-----------+
+| barangId | barangNama    | deskripsi                        | harga_beli | harga_jual | supplier_id | satuan_id |
++----------+---------------+----------------------------------+------------+------------+-------------+-----------+
+|        1 | Minuman Jeruk | Minuman Jeruk Bervitamin C 500mg |       5000 |       7500 |           4 |         1 |
++----------+---------------+----------------------------------+------------+------------+-------------+-----------+
+1 row in set (0.00 sec)
+
+UPDATE barang SET harga_beli = 4500;(Update semua kolom harga_beli)
+mysql> UPDATE barang SET harga_beli = 4500 WHERE barangId = 1;
+Query OK, 1 row affected (0.09 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+mysql> select * from barang;
++----------+---------------+----------------------------------+------------+------------+-------------+-----------+
+| barangId | barangNama    | deskripsi                        | harga_beli | harga_jual | supplier_id | satuan_id |
++----------+---------------+----------------------------------+------------+------------+-------------+-----------+
+|        1 | Minuman Jeruk | Minuman Jeruk Bervitamin C 500mg |       4500 |       7500 |           4 |         1 |
++----------+---------------+----------------------------------+------------+------------+-------------+-----------+
+9. Delete
++----------+------------+
+| satuanId | satuanNama |
++----------+------------+
+|        1 | pcs        |
+|        2 | KG         |
+|        3 | liter      |
+|        4 | buah       |
++----------+------------+
+4 rows in set (0.00 sec)
+
+mysql> DELETE FROM satuan WHERE satuanId = 4;
+Query OK, 1 row affected (0.08 sec)
+
+mysql> select * from satuan;
++----------+------------+
+| satuanId | satuanNama |
++----------+------------+
+|        1 | pcs        |
+|        2 | KG         |
+|        3 | liter      |
++----------+------------+
+3 rows in set (0.00 sec)

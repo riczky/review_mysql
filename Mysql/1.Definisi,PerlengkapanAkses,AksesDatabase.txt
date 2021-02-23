@@ -1,0 +1,30 @@
+Review Sql(Structur query language)
+
+	Database adalah koleksi sistemis dari data yg digunakan untuk memudahkan management data.
+Contoh database : Database Toko Online, Menyimpan data barang, harga barang, penjual, pembeli, data transaksi dll.
+		  Database Ojek Online, Menyimpan data tukang ojek, data pelanggan, data transaksi ojek dll.
+DBMS (Database Management System)?
+	Software yang digunakan dalam management database(Mysql,PostgreSql,Oracle,MariaDB dll)
+1. What is the meaning sql?
+	Sql (structur query language) adalah bahasa yang digunakan untuk berkomunikasi dengan database.
+DDL (Data Definition Language)
+Create, Alter, Drop dll                                                      +--------------------------------------------+               
+DML (Data Manipulation Language)                                             |              Daftar Materi                 |
+Insert, Select, Update, Delete dll                                           +--------------------------------------------+
+                                                                             |1. Definisi Sql           14.ORDER BY       |
+                                                                             |2. Perlengkapan akses     15.INNER JOIN     |
+2. How to Access Mysql                                                       |3. Akses Database         16.LEFT JOIN      |
+	- Download n install mysql(Xampp,Ampps)                              |4. Membuat Tabel          17.SELF JOIN      |
+	- Aktifkan mysql n apache                                            |5. Membuat Foreign Key    18.Fungsi Agregasi|
+	- cd /                                                               |6. Drop n Alter Table     19.GROUP BY       |
+	- dir                                                                |7. Insert                 20.HAVING         |
+	- C:\Program Files (x86)/Ampps/mysql/bin                             |8. Update                 21.SUB QUERY      |
+	- mysql -u root                                                      |9. Delete                 22.SUB QUERY FROM |
+                                                                             |10.Import                 23.VIEW           |
+3. Access Databases                                                          |11.Select Limit           24.Soal 1 Tabel   |
+Perintah : SHOW DATABASES; (Untuk melihat database di mysql)                 |12.Where                  25.One to Many    |
+	   CREATE database TokoOnline; (Membuat Database)                    |13.Where Like             26.Many to Many   |
+	   DROP database TokoOnline; (Menghapus Database)                    +--------------------------------------------+
+	   USE TokoOnline (Menggunakan Database)
+	   SHOW TABLES; (Utk melihat table di dalam database)
+	   DESCRIBE datanilai (Mendeskipsikan Tabel dlm database)

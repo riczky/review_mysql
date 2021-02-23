@@ -1,0 +1,2328 @@
+				Review Sql(Structur query language)
+
+	Database adalah koleksi sistemis dari data yg digunakan untuk memudahkan management data.
+Contoh database : Database Toko Online, Menyimpan data barang, harga barang, penjual, pembeli, data transaksi dll.
+		  Database Ojek Online, Menyimpan data tukang ojek, data pelanggan, data transaksi ojek dll.
+DBMS (Database Management System)?
+	Software yang digunakan dalam management database(Mysql,PostgreSql,Oracle,MariaDB dll)
+1. What is the meaning sql?
+	Sql (structur query language) adalah bahasa yang digunakan untuk berkomunikasi dengan database.
+DDL (Data Definition Language)
+Create, Alter, Drop dll                                                      +--------------------------------------------+               
+DML (Data Manipulation Language)                                             |              Daftar Materi                 |
+Insert, Select, Update, Delete dll                                           +--------------------------------------------+
+                                                                             |1. Definisi Sql           14.ORDER BY       |
+                                                                             |2. Perlengkapan akses     15.INNER JOIN     |
+2. How to Access Mysql                                                       |3. Akses Database         16.LEFT JOIN      |
+	- Download n install mysql(Xampp,Ampps)                              |4. Membuat Tabel          17.SELF JOIN      |
+	- Aktifkan mysql n apache                                            |5. Membuat Foreign Key    18.Fungsi Agregasi|
+	- cd /                                                               |6. Drop n Alter Table     19.GROUP BY       |
+	- dir                                                                |7. Insert                 20.HAVING         |
+	- C:\Program Files (x86)/Ampps/mysql/bin                             |8. Update                 21.SUB QUERY      |
+	- mysql -u root                                                      |9. Delete                 22.SUB QUERY FROM |
+                                                                             |10.Import                 23.VIEW           |
+3. Access Databases                                                          |11.Select Limit           24.Soal 1 Tabel   |
+Perintah : SHOW DATABASES; (Untuk melihat database di mysql)                 |12.Where                  25.One to Many    |
+	   CREATE database TokoOnline; (Membuat Database)                    |13.Where Like             26.Many to Many   |
+	   DROP database TokoOnline; (Menghapus Database)                    +--------------------------------------------+
+	   USE TokoOnline (Menggunakan Database)
+	   SHOW TABLES; (Utk melihat table di dalam database)
+	   DESCRIBE datanilai (Mendeskipsikan Tabel dlm database)
+
+4. Create Table using Sql
+Perintah: - CREATE DATABASE toko;
+	  - use toko
+	  - CREATE TABLE satuan (
+    -> satuanId INT NOT NULL AUTO_INCREMENT,
+    -> satuanNama VARCHAR(30) NOT NULL,
+    -> PRIMARY KEY (satuanId)
+    -> );
+	  - show tables;
+	  - describe satuan;
+Contoh Lain:
+ CREATE DATABASE review
+    -> ;
+Query OK, 1 row affected (0.00 sec)
+
+mysql> show databases;
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| MHS                |
+| database_parkir    |
+| db_mahasiswa       |
+| mysql              |
+| parkir             |
+| performance_schema |
+| review             |
+| seribu_tutorial    |
+| toko               |
+| unusia             |
++--------------------+
+11 rows in set (0.00 sec)
+
+mysql> use review
+Database changed
+mysql> CREATE TABLE bebas (
+    -> bebasId INT NOT NULL AUTO_INCREMENT,
+    -> bebasNama VARCHAR(30) NOT NULL,
+    -> PRIMARY KEY (bebasId)
+    -> );
+Query OK, 0 rows affected (0.22 sec)
+
+mysql> show tables;
++------------------+
+| Tables_in_review |
++------------------+
+| bebas            |
++------------------+
+1 row in set (0.01 sec)
+
+mysql> describe bebas;
++-----------+-------------+------+-----+---------+----------------+
+| Field     | Type        | Null | Key | Default | Extra          |
++-----------+-------------+------+-----+---------+----------------+
+| bebasId   | int(11)     | NO   | PRI | NULL    | auto_increment |
+| bebasNama | varchar(30) | NO   |     | NULL    |                |
++-----------+-------------+------+-----+---------+----------------+
+
+5. Foreign Key
+ CREATE TABLE barang (
+    -> barangId INT NOT NULL AUTO_INCREMENT,
+    -> barangNama VARCHAR(50) NOT NULL,
+    -> harga_beli INT NOT NULL,
+    -> harga_jual INT NOT NULL,
+    -> supplier_id INT,
+    -> satuan_id INT,
+    -> INDEX (supplier_id),
+    -> INDEX (satuan_id),
+    -> FOREIGN KEY (supplier_id) REFERENCES supplier (supplierId)
+    -> ON DELETE RESTRICT ON UPDATE CASCADE,
+    -> FOREIGN KEY (satuan_id) REFERENCES satuan (satuanId)
+    -> ON DELETE RESTRICT ON UPDATE CASCADE,
+    -> PRIMARY KEY (barangId)
+    -> );
+
+NB:	ON DELETE RESTRICT : Table parent tidak bisa dihapus selama msh ada child nya di tabel parent  
+   	ON DELETE CASCADE  : Apabila table parent di hapus maka childnya akan ikut terhapus
+	ON UPDATE RESTRICT : Apabila table parent di update maka akan gagal karna msh ada child nya
+	ON UPDATE CASCADE  : Apabila table parent di update maka child akan ikut terupdate  
+	NOT NULL : Tidak boleh kosong
+	AUTO_INCREMENT : Id diisi secara otomatis berdasarkan nilai terakhir
+
+6. Drop n Alter Table
+Drop untuk menghapus.
+Alter table utk memodifikasi struktur pada tabel
+Perintah: DROP TABLE barang_2; (Fungsinya utk menghapus tabel barang_2 didalam database)
+	  ALTER TABLE barang ADD COLUMN deskripsi TEXT; (Menambah kolom deskripsi pada tabel barang dgn tipe data Text)
+	  ALTER TABLE barang DROP COLUMN deskripsi; (Mengahapus Kolom deskripsi dari tabel barang)  
+	  ALTER TABLE barang ADD COLUMN deskripsi TEXT AFTER barangNama;(Menambah kolom deskripsi pada tabel barang,tipe data Text dgn
+	  meletakkan setelah kolom barangNama) 
+
+7. Insert
+Fungsinya untuk memasukkan data ke dalam tabel.
+Perintah: SELECT * FROM satuan; (Menampilkan data dari semua kolom satuan)
++------------+-------------+------+-----+---------+----------------+
+| Field      | Type        | Null | Key | Default | Extra          |
++------------+-------------+------+-----+---------+----------------+
+| satuanId   | int(11)     | NO   | PRI | NULL    | auto_increment |
+| satuanNama | varchar(30) | NO   |     | NULL    |                |
++------------+-------------+------+-----+---------+----------------+
+	 INSERT INTO satuan VALUES (NULL,"pcs"); (Memasukkan data pcs ke tabel satuan)
+	 INSERT INTO satuan (satuanNama) VALUES ('KG'); (Memasukkan data satuanNama ke tabel satuan jika id Auto_increment)
+	 INSERT INTO satuan (satuanNama) VALUES ('liter'),('buah'); (Memasukka  data 2 sekaligus)
++----------+------------+
+| satuanId | satuanNama |
++----------+------------+
+|        1 | pcs        |
+|        2 | KG         |
+|        3 | liter      |
+|        4 | buah       |
++----------+------------+
+8. Update
++----------+---------------+----------------------------------+------------+------------+-------------+-----------+
+| barangId | barangNama    | deskripsi                        | harga_beli | harga_jual | supplier_id | satuan_id |
++----------+---------------+----------------------------------+------------+------------+-------------+-----------+
+|        1 | Minuman Jeruk | Minuman Jeruk Bervitamin C 500mg |       5000 |       7500 |           4 |         1 |
++----------+---------------+----------------------------------+------------+------------+-------------+-----------+
+1 row in set (0.00 sec)
+
+UPDATE barang SET harga_beli = 4500;(Update semua kolom harga_beli)
+mysql> UPDATE barang SET harga_beli = 4500 WHERE barangId = 1;
+Query OK, 1 row affected (0.09 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+mysql> select * from barang;
++----------+---------------+----------------------------------+------------+------------+-------------+-----------+
+| barangId | barangNama    | deskripsi                        | harga_beli | harga_jual | supplier_id | satuan_id |
++----------+---------------+----------------------------------+------------+------------+-------------+-----------+
+|        1 | Minuman Jeruk | Minuman Jeruk Bervitamin C 500mg |       4500 |       7500 |           4 |         1 |
++----------+---------------+----------------------------------+------------+------------+-------------+-----------+
+9. Delete
++----------+------------+
+| satuanId | satuanNama |
++----------+------------+
+|        1 | pcs        |
+|        2 | KG         |
+|        3 | liter      |
+|        4 | buah       |
++----------+------------+
+4 rows in set (0.00 sec)
+
+mysql> DELETE FROM satuan WHERE satuanId = 4;
+Query OK, 1 row affected (0.08 sec)
+
+mysql> select * from satuan;
++----------+------------+
+| satuanId | satuanNama |
++----------+------------+
+|        1 | pcs        |
+|        2 | KG         |
+|        3 | liter      |
++----------+------------+
+3 rows in set (0.00 sec)
+
+10. Import
+Download file
+http://www.mysqltutorial.org/mysql-sample-database-aspx/
+	-Extract file 
+	-Buka localhost/phpmyadmin
+	-Import
+	-ChooseFile Sample database.sql
+	-Kirim
+
+11. Select Limit
+show tables;
++-------------------------+
+| Tables_in_classicmodels |
++-------------------------+
+| customers               |
+| employees               |
+| offices                 |
+| orderdetails            |
+| orders                  |
+| payments                |
+| productlines            |
+| products                |
++-------------------------+
+mysql> SELECT * from products; (Mengambil data semua kolom dari tabel products)
+mysql> describe products;
++--------------------+---------------+------+-----+---------+-------+
+| Field              | Type          | Null | Key | Default | Extra |
++--------------------+---------------+------+-----+---------+-------+
+| productCode        | varchar(15)   | NO   | PRI | NULL    |       |
+| productName        | varchar(70)   | NO   |     | NULL    |       |
+| productLine        | varchar(50)   | NO   | MUL | NULL    |       |
+| productScale       | varchar(10)   | NO   |     | NULL    |       |
+| productVendor      | varchar(50)   | NO   |     | NULL    |       |
+| productDescription | text          | NO   |     | NULL    |       |
+| quantityInStock    | smallint(6)   | NO   |     | NULL    |       |
+| buyPrice           | decimal(10,2) | NO   |     | NULL    |       |
+| MSRP               | decimal(10,2) | NO   |     | NULL    |       |
++--------------------+---------------+------+-----+---------+-------+
+mysql>SELECT productCode,productName FROM products; (Mengambil data kolom productCode,productName dari tabel products)
+
+mysql> SELECT productCode,productName FROM products LIMIT 10;(Mengambil 10 data kolom productCode,productName berdasarkan data ke 1 dari tabel products)
++-------------+---------------------------------------+
+| productCode | productName                           |
++-------------+---------------------------------------+
+| S10_1678    | 1969 Harley Davidson Ultimate Chopper |
+| S10_1949    | 1952 Alpine Renault 1300              |
+| S10_2016    | 1996 Moto Guzzi 1100i                 |
+| S10_4698    | 2003 Harley-Davidson Eagle Drag Bike  |
+| S10_4757    | 1972 Alfa Romeo GTA                   |
+| S10_4962    | 1962 LanciaA Delta 16V                |
+| S12_1099    | 1968 Ford Mustang                     |
+| S12_1108    | 2001 Ferrari Enzo                     |
+| S12_1666    | 1958 Setra Bus                        |
+| S12_2823    | 2002 Suzuki XREO                      |
++-------------+---------------------------------------+
+10 rows in set (0.00 sec)
+
+mysql> SELECT productCode AS kode,productName AS nama FROM products LIMIT 10;(Mengganti Atribut dengan AS(alias) kode dan nama)
++----------+---------------------------------------+
+| kode     | nama                                  |
++----------+---------------------------------------+
+| S10_1678 | 1969 Harley Davidson Ultimate Chopper |
+| S10_1949 | 1952 Alpine Renault 1300              |
+| S10_2016 | 1996 Moto Guzzi 1100i                 |
+| S10_4698 | 2003 Harley-Davidson Eagle Drag Bike  |
+| S10_4757 | 1972 Alfa Romeo GTA                   |
+| S10_4962 | 1962 LanciaA Delta 16V                |
+| S12_1099 | 1968 Ford Mustang                     |
+| S12_1108 | 2001 Ferrari Enzo                     |
+| S12_1666 | 1958 Setra Bus                        |
+| S12_2823 | 2002 Suzuki XREO                      |
++----------+---------------------------------------+
+10 rows in set (0.00 sec)
+
+mysql> SELECT productCode,productName FROM products
+    -> LIMIT 10,5; (Mengambil 5 data kolom productCode,productName berdasarkan data ke 10 dari tabel products)
++-------------+-------------------------+
+| productCode | productName             |
++-------------+-------------------------+
+| S12_3148    | 1969 Corvair Monza      |
+| S12_3380    | 1968 Dodge Charger      |
+| S12_3891    | 1969 Ford Falcon        |
+| S12_3990    | 1970 Plymouth Hemi Cuda |
+| S12_4473    | 1957 Chevy Pickup       |
++-------------+-------------------------+
+5 rows in set (0.00 sec)
+
+12. Where
+mysql>SELECT productCode,productName,productLine,buyPrice FROM products WHERE productLine = 'Motorcycles';
+NB: Mengambil data kolom productCode,productName,productLine,buyPrice dari tabel products menggunakan WHERE productLine = 'Motorcycles'
++-------------+---------------------------------------+-------------+----------+
+| productCode | productName                           | productLine | buyPrice |
++-------------+---------------------------------------+-------------+----------+
+| S10_1678    | 1969 Harley Davidson Ultimate Chopper | Motorcycles |    48.81 |
+| S10_2016    | 1996 Moto Guzzi 1100i                 | Motorcycles |    68.99 |
+| S10_4698    | 2003 Harley-Davidson Eagle Drag Bike  | Motorcycles |    91.02 |
+| S12_2823    | 2002 Suzuki XREO                      | Motorcycles |    66.27 |
+| S18_2625    | 1936 Harley Davidson El Knucklehead   | Motorcycles |    24.23 |
+| S18_3782    | 1957 Vespa GS150                      | Motorcycles |    32.95 |
+| S24_1578    | 1997 BMW R 1100 S                     | Motorcycles |    60.86 |
+| S24_2000    | 1960 BSA Gold Star DBD34              | Motorcycles |    37.32 |
+| S24_2360    | 1982 Ducati 900 Monster               | Motorcycles |    47.10 |
+| S32_1374    | 1997 BMW F650 ST                      | Motorcycles |    66.92 |
+| S32_2206    | 1982 Ducati 996 R                     | Motorcycles |    24.14 |
+| S32_4485    | 1974 Ducati 350 Mk3 Desmo             | Motorcycles |    56.13 |
+| S50_4713    | 2002 Yamaha YZR M1                    | Motorcycles |    34.17 |
++-------------+---------------------------------------+-------------+----------+
+13 rows in set (0.03 sec)
+mysql>SELECT productCode,productName,productLine,buyPrice FROM products WHERE productLine != 'Motorcycles';
+NB: Mengambil data kolom productCode,productName,productLine,buyPrice dari tabel products menggunakan WHERE productLine != 'Motorcycles'(yang bukan 'Motorcycles')
+mysql>SELECT productCode,productName,productLine,buyPrice FROM products WHERE buyPrice < 50;
+NB : Mengambil data kolom productCode,productName,productLine,buyPrice dari tabel products yang harganya di bawah 50
+
+mysql> SELECT productCode,productName,productLine,buyPrice FROM products WHERE buyPrice < 50
+    -> AND productLine ='Motorcycles';
+NB : Mengambil data kolom productCode,productName,productLine,buyPrice dari tabel products yang harganya di bawah 50 dan Produk Motorcycles
++-------------+---------------------------------------+-------------+----------+
+| productCode | productName                           | productLine | buyPrice |
++-------------+---------------------------------------+-------------+----------+
+| S10_1678    | 1969 Harley Davidson Ultimate Chopper | Motorcycles |    48.81 |
+| S18_2625    | 1936 Harley Davidson El Knucklehead   | Motorcycles |    24.23 |
+| S18_3782    | 1957 Vespa GS150                      | Motorcycles |    32.95 |
+| S24_2000    | 1960 BSA Gold Star DBD34              | Motorcycles |    37.32 |
+| S24_2360    | 1982 Ducati 900 Monster               | Motorcycles |    47.10 |
+| S32_2206    | 1982 Ducati 996 R                     | Motorcycles |    24.14 |
+| S50_4713    | 2002 Yamaha YZR M1                    | Motorcycles |    34.17 |
++-------------+---------------------------------------+-------------+----------+
+7 rows in set (0.00 sec)
+mysql>SELECT productCode,productName,productLine,buyPrice FROM products WHERE buyPrice > 50
+    -> OR productLine='Planes';
+NB : Mengambil data yang harganya di atas 50 ataupun produk Planes
+
+mysql> SELECT productCode,productName,productLine,buyPrice FROM products WHERE productLine IN ('Planes','Ships');
+NB : Menampilkan 2 data menggunakan (IN) dari kolom productLine
++-------------+----------------------------------+-------------+----------+
+| productCode | productName                      | productLine | buyPrice |
++-------------+----------------------------------+-------------+----------+
+| S18_1662    | 1980s Black Hawk Helicopter      | Planes      |    77.27 |
+| S18_2581    | P-51-D Mustang                   | Planes      |    49.00 |
+| S24_1785    | 1928 British Royal Navy Airplane | Planes      |    66.74 |
+| S24_2841    | 1900s Vintage Bi-Plane           | Planes      |    34.25 |
+| S24_3949    | Corsair F4U ( Bird Cage)         | Planes      |    29.34 |
+| S24_4278    | 1900s Vintage Tri-Plane          | Planes      |    36.23 |
+| S700_1691   | American Airlines: B767-300      | Planes      |    51.15 |
+| S700_2466   | America West Airlines B757-200   | Planes      |    68.80 |
+| S700_2834   | ATA: B757-300                    | Planes      |    59.33 |
+| S700_3167   | F/A 18 Hornet 1/72               | Planes      |    54.40 |
+
+mysql> SELECT productCode,productName,productLine,buyPrice FROM products
+    -> WHERE buyPrice BETWEEN 50 AND 70;
+NB : Dimana harga diantara 50 dan 70
++-------------+-----------------------------------------+------------------+----------+
+| productCode | productName                             | productLine      | buyPrice |
++-------------+-----------------------------------------+------------------+----------+
+| S10_2016    | 1996 Moto Guzzi 1100i                   | Motorcycles      |    68.99 |
+| S12_2823    | 2002 Suzuki XREO                        | Motorcycles      |    66.27 |
+| S12_4473    | 1957 Chevy Pickup                       | Trucks and Buses |    55.70 |
+| S12_4675    | 1969 Dodge Charger                      | Classic Cars     |    58.73 |
+| S18_1097    | 1940 Ford Pickup Truck                  | Trucks and Buses |    58.33 |
+| S18_1342    | 1937 Lincoln Berline                    | Vintage Cars     |    60.62 |
+| S18_1589    | 1965 Aston Martin DB5                   | Classic Cars     |    65.96 |
+| S18_1889    | 1948 Porsche 356-A Roadster             | Classic Cars     |    53.90 |
+| S18_2325    | 1932 Model A Ford J-Coupe               | Vintage Cars     |    58.48 |
+| S18_2870    | 1999 Indy 500 Monte Carlo SS            | Classic Cars     |    56.76 |
+| S18_2949    | 1913 Ford Model T Speedster             | Vintage Cars     |    60.78 |
+| S18_3029    | 1999 Yamaha Speed Boat                  | Ships            |    51.61 |
+| S18_3136    | 18th Century Vintage Horse Carriage     | Vintage Cars     |    60.74 |
+| S18_3140    | 1903 Ford Model A                       | Vintage Cars     |    68.30 |
+
+
+mysql> SELECT productCode,productName,productLine,buyPrice FROM products
+    -> WHERE buyPrice BETWEEN 50 AND 70 AND productLine = 'Ships';
+NB : Dimana harga diantara 50 dan 70 dan productLine = ships.
++-------------+------------------------+-------------+----------+
+| productCode | productName            | productLine | buyPrice |
++-------------+------------------------+-------------+----------+
+| S18_3029    | 1999 Yamaha Speed Boat | Ships       |    51.61 |
+| S700_3505   | The Titanic            | Ships       |    51.09 |
+| S700_3962   | The Queen Mary         | Ships       |    53.63 |
++-------------+------------------------+-------------+----------+
+
+13. Where Like
+
+mysql> SELECT firstName,lastName from employees;
++-----------+-----------+
+| firstName | lastName  |
++-----------+-----------+
+| Diane     | Murphy    |
+| Mary      | Patterson |
+| Jeff      | Firrelli  |
+| William   | Patterson |
+| Gerard    | Bondur    |
+| Anthony   | Bow       |
+| Leslie    | Jennings  |
+| Leslie    | Thompson  |
+| Julie     | Firrelli  |
+| Steve     | Patterson |
+
+mysql> SELECT firstName from employees
+    -> WHERE firstName LIKE "A%";
+NB : Mengambil data kolom firstname dari tabel employees yang berawalan dengan huruf A
++-----------+
+| firstName |
++-----------+
+| Anthony   |
+| Andy      |
++-----------+
+
+mysql> SELECT lastName FROM employees
+    -> WHERE lastName LIKE "%on";
+NB : Mengambil data kolom lastname dari tabel employees yang berakhiran dengan huruf on
++-----------+
+| lastName  |
++-----------+
+| Patterson |
+| Patterson |
+| Thompson  |
+| Patterson |
++-----------+
+
+mysql> SELECT firstName FROM employees WHERE firstName LIKE "%li%";
+NB : Mengambil data kolom firstname dari tabel employees yang diantara huruf li
++-----------+
+| firstName |
++-----------+
+| William   |
+| Leslie    |
+| Leslie    |
+| Julie     |
++-----------+
+
+mysql> SELECT productName FROM products
+    -> WHERE productName LIKE "20%";
+NB : Mengambil data dimana productName berawalan dgn 20
++--------------------------------------+
+| productName                          |
++--------------------------------------+
+| 2003 Harley-Davidson Eagle Drag Bike |
+| 2001 Ferrari Enzo                    |
+| 2002 Suzuki XREO                     |
+| 2002 Chevy Corvette                  |
+| 2002 Yamaha YZR M1                   |
++--------------------------------------+
+
+mysql> SELECT firstName FROM employees
+    -> WHERE firstName LIKE "MA____";
+NB:Underscore(_) berfungsi utk mencari pola dgn karakter yang dibutuhkan
+   Percent(%) berfungsi utk mengikuti dengan karakter apapun
++-----------+
+| firstName |
++-----------+
+| Martin    |
++-----------+
+
+mysql> SELECT productName FROM products
+    -> WHERE productName LIKE "19__ C%";
+NB : Kombinasi dimana 19 mencari pola dan C mengikuti karakter apapun
++-------------------------------------------+
+| productName                               |
++-------------------------------------------+
+| 1969 Corvair Monza                        |
+| 1957 Chevy Pickup                         |
+| 1998 Chrysler Plymouth Prowler            |
+| 1941 Chevrolet Special Deluxe Cabriolet   |
+| 1939 Cadillac Limousine                   |
+| 1957 Corvette Convertible                 |
+| 1970 Chevy Chevelle SS 454                |
+| 1939 Chevrolet Deluxe Coupe               |
+| 1938 Cadillac V-16 Presidential Limousine |
+| 1958 Chevy Corvette Limited Edition       |
+| 1952 Citroen-15CV                         |
+mysql> SELECT productName FROM products
+    -> WHERE productName NOT LIKE "19__ C%";
+NB : Kombinasi dimana TIDAK mencari pola 19 dan TIDAK mengikuti karakter berawalan C apapun
+
+14. Order By
+mysql> SELECT productLine,productName,buyPrice FROM products
+    -> ORDER BY productLine;
+NB : Mengambil data berdasarkan urutan paling kecil (ASC) dari kolom productLine
++------------------+---------------------------------------------+----------+
+| productLine      | productName                                 | buyPrice |
++------------------+---------------------------------------------+----------+
+| Classic Cars     | 1952 Alpine Renault 1300                    |    98.58 |
+| Classic Cars     | 1972 Alfa Romeo GTA                         |    85.68 |
+| Classic Cars     | 1962 LanciaA Delta 16V                      |   103.42 |
+| Classic Cars     | 1968 Ford Mustang                           |    95.34 |
+| Classic Cars     | 2001 Ferrari Enzo                           |    95.59 |
+| Classic Cars     | 1969 Corvair Monza                          |    89.14 |
+| Classic Cars     | 1968 Dodge Charger                          |    75.16 |
+
+mysql> SELECT productLine,productName,buyPrice FROM products
+    -> ORDER BY buyPrice DESC;
+NB : Mengambil data berdasarkan harga terbesar (DESC) dari kolom buyPrice
++------------------+---------------------------------------------+----------+
+| productLine      | productName                                 | buyPrice |
++------------------+---------------------------------------------+----------+
+| Classic Cars     | 1962 LanciaA Delta 16V                      |   103.42 |
+| Classic Cars     | 1998 Chrysler Plymouth Prowler              |   101.51 |
+| Classic Cars     | 1952 Alpine Renault 1300                    |    98.58 |
+| Classic Cars     | 1956 Porsche 356A Coupe                     |    98.30 |
+| Classic Cars     | 2001 Ferrari Enzo                           |    95.59 |
+| Classic Cars     | 1968 Ford Mustang                           |    95.34 |
+| Classic Cars     | 1995 Honda Civic                            |    93.89 |
+| Classic Cars     | 1970 Triumph Spitfire                       |    91.92 |
+| Motorcycles      | 2003 Harley-Davidson Eagle Drag Bike        |    91.02 |
+| Classic Cars     | 1969 Corvair Monza                          |    89.14 |
+
+mysql> SELECT productLine,productName,buyPrice FROM products
+    -> ORDER BY productLine,productName;
+NB : Mengambil data multiple order berdasarkan productline,productname terkecil
++------------------+---------------------------------------------+----------+
+| productLine      | productName                                 | buyPrice |
++------------------+---------------------------------------------+----------+
+| Classic Cars     | 1948 Porsche 356-A Roadster                 |    53.90 |
+| Classic Cars     | 1948 Porsche Type 356 Roadster              |    62.16 |
+| Classic Cars     | 1949 Jaguar XK 120                          |    47.25 |
+| Classic Cars     | 1952 Alpine Renault 1300                    |    98.58 |
+| Classic Cars     | 1952 Citroen-15CV                           |    72.82 |
+| Classic Cars     | 1956 Porsche 356A Coupe                     |    98.30 |
+| Classic Cars     | 1957 Corvette Convertible                   |    69.93 |
+| Classic Cars     | 1957 Ford Thunderbird                       |    34.21 |
+
+mysql> SELECT productLine,productName,buyPrice FROM products
+    -> ORDER BY productLine ASC,productName DESC;
+NB : Mendefinisikan urutan yang di order berdasarkan ASC dan DESC
+
+mysql> SELECT productLine,productName,MSRP-buyPrice AS untung FROM products;
+NB : MSRP(Harga jual),mengambil data utk melihat keuntungan
++------------------+---------------------------------------------+--------+
+| productLine      | productName                                 | untung |
++------------------+---------------------------------------------+--------+
+| Motorcycles      | 1969 Harley Davidson Ultimate Chopper       |  46.89 |
+| Classic Cars     | 1952 Alpine Renault 1300                    | 115.72 |
+| Motorcycles      | 1996 Moto Guzzi 1100i                       |  49.95 |
+| Motorcycles      | 2003 Harley-Davidson Eagle Drag Bike        | 102.64 |
+| Classic Cars     | 1972 Alfa Romeo GTA                         |  50.32 |
+| Classic Cars     | 1962 LanciaA Delta 16V                      |  44.32 |
+| Classic Cars     | 1968 Ford Mustang                           |  99.23 |
+| Classic Cars     | 2001 Ferrari Enzo                           | 112.21 |
+
+mysql> SELECT productLine,productName,MSRP-buyPrice AS untung FROM products
+    -> ORDER BY MSRP-buyPrice;
+NB : Melihat keuntungan dari yang terkecil ke yg terbesar
+mysql> SELECT productLine,productName,MSRP-buyPrice AS untung FROM products
+    -> ORDER BY untung;(Menggunakan Alias)
++------------------+---------------------------------------------+--------+
+| productLine      | productName                                 | untung |
++------------------+---------------------------------------------+--------+
+| Vintage Cars     | 1939 Chevrolet Deluxe Coupe                 |  10.62 |
+| Motorcycles      | 1982 Ducati 996 R                           |  16.09 |
+| Vintage Cars     | 1930 Buick Marquette Phaeton                |  16.58 |
+| Planes           | Boeing X-32A JSF                            |  16.89 |
+| Vintage Cars     | 1936 Mercedes Benz 500k Roadster            |  19.28 |
+| Classic Cars     | 1958 Chevy Corvette Limited Edition         |  19.45 |
+| Trains           | 1962 City of Detroit Streetcar              |  21.09 |
+| Classic Cars     | 1966 Shelby Cobra 427 S/C                   |  21.13 |
+
+mysql> SELECT productLine,productName,MSRP-buyPrice AS untung FROM products
+    -> ORDER BY untung DESC;
+NB : Melihat keuntungan dari yang terbesar ke yg terkecil
++------------------+---------------------------------------------+--------+
+| productLine      | productName                                 | untung |
++------------------+---------------------------------------------+--------+
+| Classic Cars     | 1952 Alpine Renault 1300                    | 115.72 |
+| Classic Cars     | 2001 Ferrari Enzo                           | 112.21 |
+| Motorcycles      | 2003 Harley-Davidson Eagle Drag Bike        | 102.64 |
+| Classic Cars     | 1968 Ford Mustang                           |  99.23 |
+| Vintage Cars     | 1928 Mercedes-Benz SSK                      |  96.19 |
+| Classic Cars     | 1992 Ferrari 360 Spider red                 |  91.44 |
+| Classic Cars     | 1969 Ford Falcon                            |  89.97 |
+| Motorcycles      | 2002 Suzuki XREO                            |  84.35 |
+| Vintage Cars     | 1917 Grand Touring Sedan                    |  83.30 |
+
+mysql> SELECT productLine,productName,MSRP-buyPrice AS untung FROM products
+    -> ORDER BY FIELD(productLine,'Ships','Planes','Vintage Cars','Trucks and Buses','Motorcycles',
+    -> 'Trains','Classic Cars');
+NB : Custom order kolom (productLine,'Ships','Planes','Vintage Cars','Trucks and Buses','Motorcycles',
+    -> 'Trains','Classic Cars');
+
++------------------+---------------------------------------------+--------+
+| productLine      | productName                                 | untung |
++------------------+---------------------------------------------+--------+
+| Ships            | 1999 Yamaha Speed Boat                      |  34.41 |
+| Ships            | 18th century schooner                       |  40.55 |
+| Ships            | The Schooner Bluenose                       |  32.67 |
+| Planes           | 1980s Black Hawk Helicopter                 |  80.42 |
+| Planes           | P-51-D Mustang                              |  35.48 |
+| Vintage Cars     | 1937 Lincoln Berline                        |  42.12 |
+| Vintage Cars     | 1936 Mercedes-Benz 500K Special Roadster    |  29.65 |
+| Trucks and Buses | 1958 Setra Bus                              |  58.77 |
+| Trucks and Buses | 1957 Chevy Pickup                           |  62.80 |
+| Motorcycles      | 1969 Harley Davidson Ultimate Chopper       |  46.89 |
+| Motorcycles      | 1996 Moto Guzzi 1100i                       |  49.95 |
+| Trains           | Collectable Wooden Train                    |  33.28 |
+| Trains           | 1950's Chicago Surface Lines Streetcar      |  35.42 |
+| Classic Cars     | 1952 Alpine Renault 1300                    | 115.72 |
+| Classic Cars     | 1972 Alfa Romeo GTA                         |  50.32 |
+
+mysql> SELECT productLine,productName,MSRP-buyPrice AS untung FROM products
+    -> ORDER BY FIELD(productLine,'Ships','Planes','Vintage Cars','Trucks and Buses','Motorcycles',
+    -> 'Trains','Classic Cars') DESC;
+NB : Custom order yang diurutkan berdasarkan urutan terakhir.
+
+15. Inner Join (Irisan)
+Join : Membutuhkan informasi dari 2 tabel atau lebih
+select customerName,orderNumber
+    -> from customers JOIN orders
+    -> USING (customerNumber);
+NB : INNER JOIN bisa dituliskan dgn Join saja
+mysql> describe employees;
++----------------+--------------+------+-----+---------+-------+
+| Field          | Type         | Null | Key | Default | Extra |
++----------------+--------------+------+-----+---------+-------+
+| employeeNumber | int(11)      | NO   | PRI | NULL    |       |
+| lastName       | varchar(50)  | NO   |     | NULL    |       |
+| firstName      | varchar(50)  | NO   |     | NULL    |       |
+| extension      | varchar(10)  | NO   |     | NULL    |       |
+| email          | varchar(100) | NO   |     | NULL    |       |
+| officeCode     | varchar(10)  | NO   | MUL | NULL    |       |
+| reportsTo      | int(11)      | YES  | MUL | NULL    |       |
+| jobTitle       | varchar(50)  | NO   |     | NULL    |       |
++----------------+--------------+------+-----+---------+-------+
+8 rows in set (0.06 sec)
+
+mysql> select officeCode,firstName from employees;
++------------+-----------+
+| officeCode | firstName |
++------------+-----------+
+| 1          | Diane     |
+| 1          | Mary      |
+| 1          | Jeff      |
+| 6          | William   |
+| 4          | Gerard    |
+| 1          | Anthony   |
+| 1          | Leslie    |
+| 1          | Leslie    |
+| 2          | Julie     |
+| 2          | Steve     |
+| 3          | Foon Yue  |
+| 3          | George    |
+| 4          | Loui      |
+| 4          | Gerard    |
+| 4          | Pamela    |
+| 7          | Larry     |
+| 7          | Barry     |
+| 6          | Andy      |
+| 6          | Peter     |
+| 6          | Tom       |
+| 5          | Mami      |
+| 5          | Yoshimi   |
+| 4          | Martin    |
++------------+-----------+
+
+mysql> describe offices;
++--------------+-------------+------+-----+---------+-------+
+| Field        | Type        | Null | Key | Default | Extra |
++--------------+-------------+------+-----+---------+-------+
+| officeCode   | varchar(10) | NO   | PRI | NULL    |       |
+| city         | varchar(50) | NO   |     | NULL    |       |
+| phone        | varchar(50) | NO   |     | NULL    |       |
+| addressLine1 | varchar(50) | NO   |     | NULL    |       |
+| addressLine2 | varchar(50) | YES  |     | NULL    |       |
+| state        | varchar(50) | YES  |     | NULL    |       |
+| country      | varchar(50) | NO   |     | NULL    |       |
+| postalCode   | varchar(15) | NO   |     | NULL    |       |
+| territory    | varchar(10) | NO   |     | NULL    |       |
++--------------+-------------+------+-----+---------+-------+
+
+mysql> select officeCode,city from offices;
++------------+---------------+
+| officeCode | city          |
++------------+---------------+
+| 1          | San Francisco |
+| 2          | Boston        |
+| 3          | NYC           |
+| 4          | Paris         |
+| 5          | Tokyo         |
+| 6          | Sydney        |
+| 7          | London        |
++------------+---------------+
+
+mysql> SELECT firstName,city FROM employees INNER JOIN offices
+    -> ON employees.officeCode = offices.officeCode;
+NB : Mengambil data firstName dari tabel employees dan city dari kolom offices
+     Mengambil data dari 2 tabel yang berbeda
++-----------+---------------+
+| firstName | city          |
++-----------+---------------+
+| Diane     | San Francisco |
+| Mary      | San Francisco |
+| Jeff      | San Francisco |
+| Anthony   | San Francisco |
+| Leslie    | San Francisco |
+| Leslie    | San Francisco |
+| Julie     | Boston        |
+| Steve     | Boston        |
+| Foon Yue  | NYC           |
+| George    | NYC           |
+| Gerard    | Paris         |
+| Loui      | Paris         |
+| Gerard    | Paris         |
+| Pamela    | Paris         |
+| Martin    | Paris         |
+| Mami      | Tokyo         |
+| Yoshimi   | Tokyo         |
+| William   | Sydney        |
+| Andy      | Sydney        |
+| Peter     | Sydney        |
+| Tom       | Sydney        |
+| Larry     | London        |
+| Barry     | London        |
++-----------+---------------+
+23 rows in set (0.00 sec)
+
+mysql> SELECT firstName,city FROM employees INNER JOIN offices
+    -> USING (officeCode);
+NB : USING bisa digunakan ketika 2 tabel yg di join kan memiliki nama kolom yang sama 
+Contoh lain :
+mysql> describe customers;
++------------------------+---------------+------+-----+---------+-------+
+| Field                  | Type          | Null | Key | Default | Extra |
++------------------------+---------------+------+-----+---------+-------+
+| customerNumber         | int(11)       | NO   | PRI | NULL    |       |
+| customerName           | varchar(50)   | NO   |     | NULL    |       |
+| contactLastName        | varchar(50)   | NO   |     | NULL    |       |
+| contactFirstName       | varchar(50)   | NO   |     | NULL    |       |
+| phone                  | varchar(50)   | NO   |     | NULL    |       |
+| addressLine1           | varchar(50)   | NO   |     | NULL    |       |
+| addressLine2           | varchar(50)   | YES  |     | NULL    |       |
+| city                   | varchar(50)   | NO   |     | NULL    |       |
+| state                  | varchar(50)   | YES  |     | NULL    |       |
+| postalCode             | varchar(15)   | YES  |     | NULL    |       |
+| country                | varchar(50)   | NO   |     | NULL    |       |
+| salesRepEmployeeNumber | int(11)       | YES  | MUL | NULL    |       |
+| creditLimit            | decimal(10,2) | YES  |     | NULL    |       |
++------------------------+---------------+------+-----+---------+-------+
+13 rows in set (0.00 sec)
+
+mysql> describe employees;
++----------------+--------------+------+-----+---------+-------+
+| Field          | Type         | Null | Key | Default | Extra |
++----------------+--------------+------+-----+---------+-------+
+| employeeNumber | int(11)      | NO   | PRI | NULL    |       |
+| lastName       | varchar(50)  | NO   |     | NULL    |       |
+| firstName      | varchar(50)  | NO   |     | NULL    |       |
+| extension      | varchar(10)  | NO   |     | NULL    |       |
+| email          | varchar(100) | NO   |     | NULL    |       |
+| officeCode     | varchar(10)  | NO   | MUL | NULL    |       |
+| reportsTo      | int(11)      | YES  | MUL | NULL    |       |
+| jobTitle       | varchar(50)  | NO   |     | NULL    |       |
++----------------+--------------+------+-----+---------+-------+
+8 rows in set (0.03 sec)
+mysql> SELECT firstName,lastName,customerName
+    -> FROM employees INNER JOIN customers
+    -> ON employees.employeeNumber = customers.salesRepEmployeeNumber
+    -> LIMIT 10;
+NB : Mengambil 10 data firstName,lastName dari tabel employees dan costumerName dari tabel costumers 
++-----------+----------+------------------------------+
+| firstName | lastName | customerName                 |
++-----------+----------+------------------------------+
+| Leslie    | Jennings | Mini Gifts Distributors Ltd. |
+| Leslie    | Jennings | Mini Wheels Co.              |
+| Leslie    | Jennings | Technics Stores Inc.         |
+| Leslie    | Jennings | Corporate Gift Ideas Co.     |
+| Leslie    | Jennings | The Sharp Gifts Warehouse    |
+| Leslie    | Jennings | Signal Collectibles Ltd.     |
+| Leslie    | Thompson | Signal Gift Stores           |
+| Leslie    | Thompson | Toys4GrownUps.com            |
+| Leslie    | Thompson | Boards & Toys Co.            |
+| Leslie    | Thompson | Collectable Mini Designs Co. |
++-----------+----------+------------------------------+
+10 rows in set (0.00 sec)
+
+mysql> SELECT CONCAT (firstName,"",lastName) AS FullName,customerName
+    -> FROM employees INNER JOIN customers
+    -> ON employees.employeeNumber = customers.salesRepEmployeeNumber
+    -> LIMIT 10;
+NB: CONCAT fungsinya utk menggabungkan 2 kolom yg berbeda
+    AS fungsinya utk alias 
++----------------+------------------------------+
+| FullName       | customerName                 |
++----------------+------------------------------+
+| LeslieJennings | Mini Gifts Distributors Ltd. |
+| LeslieJennings | Mini Wheels Co.              |
+| LeslieJennings | Technics Stores Inc.         |
+| LeslieJennings | Corporate Gift Ideas Co.     |
+| LeslieJennings | The Sharp Gifts Warehouse    |
+| LeslieJennings | Signal Collectibles Ltd.     |
+| LeslieThompson | Signal Gift Stores           |
+| LeslieThompson | Toys4GrownUps.com            |
+| LeslieThompson | Boards & Toys Co.            |
+| LeslieThompson | Collectable Mini Designs Co. |
++----------------+------------------------------+
+10 rows in set (0.00 sec)
+
+16. Left Join
+
+mysql> describe orders;
++----------------+-------------+------+-----+---------+-------+
+| Field          | Type        | Null | Key | Default | Extra |
++----------------+-------------+------+-----+---------+-------+
+| orderNumber    | int(11)     | NO   | PRI | NULL    |       |
+| orderDate      | date        | NO   |     | NULL    |       |
+| requiredDate   | date        | NO   |     | NULL    |       |
+| shippedDate    | date        | YES  |     | NULL    |       |
+| status         | varchar(15) | NO   |     | NULL    |       |
+| comments       | text        | YES  |     | NULL    |       |
+| customerNumber | int(11)     | NO   | MUL | NULL    |       |
++----------------+-------------+------+-----+---------+-------+
+7 rows in set (0.08 sec)
+
+mysql> describe customers;
++------------------------+---------------+------+-----+---------+-------+
+| Field                  | Type          | Null | Key | Default | Extra |
++------------------------+---------------+------+-----+---------+-------+
+| customerNumber         | int(11)       | NO   | PRI | NULL    |       |
+| customerName           | varchar(50)   | NO   |     | NULL    |       |
+| contactLastName        | varchar(50)   | NO   |     | NULL    |       |
+| contactFirstName       | varchar(50)   | NO   |     | NULL    |       |
+| phone                  | varchar(50)   | NO   |     | NULL    |       |
+| addressLine1           | varchar(50)   | NO   |     | NULL    |       |
+| addressLine2           | varchar(50)   | YES  |     | NULL    |       |
+| city                   | varchar(50)   | NO   |     | NULL    |       |
+| state                  | varchar(50)   | YES  |     | NULL    |       |
+| postalCode             | varchar(15)   | YES  |     | NULL    |       |
+| country                | varchar(50)   | NO   |     | NULL    |       |
+| salesRepEmployeeNumber | int(11)       | YES  | MUL | NULL    |       |
+| creditLimit            | decimal(10,2) | YES  |     | NULL    |       |
++------------------------+---------------+------+-----+---------+-------+
+13 rows in set (0.03 sec)
+mysql> select customerName,orderNumber
+    -> from customers LEFT JOIN orders
+    -> USING (customerNumber);
+NB : Tetap menampilkan beberapa customerName walaupun tidak pernah melakukan order (NULL)
++------------------------------------+-------------+
+| customerName                       | orderNumber |
++------------------------------------+-------------+
+| Toys4GrownUps.com                  |       10189 |
+| Toys4GrownUps.com                  |       10367 |
+| Asian Shopping Network, Co         |        NULL |
+| Mini Caravy                        |       10241 |
+| Mini Caravy                        |       10255 |
+| Mini Caravy                        |       10405 |
+| King Kong Collectables, Co.        |       10187 |
+| King Kong Collectables, Co.        |       10200 |
+| Enaco Distributors                 |       10118 |
+| Enaco Distributors                 |       10197 |
+| Enaco Distributors                 |       10340 |
+| Boards & Toys Co.                  |       10154 |
+| Boards & Toys Co.                  |       10376 |
+| Natürlich Autos                    |        NULL |
+----------------------------------------------------
+mysql> select customerName,orderNumber
+    -> from customers LEFT JOIN orders
+    -> USING (customerNumber)
+    -> WHERE orderNumber IS NULL;
+NB : LeftJoin  dengan menampilkan nama costumer yg blm pernah melakukan order
++--------------------------------+-------------+
+| customerName                   | orderNumber |
++--------------------------------+-------------+
+| Havel & Zbyszek Co             |        NULL |
+| American Souvenirs Inc         |        NULL |
+| Porto Imports Co.              |        NULL |
+| Asian Shopping Network, Co     |        NULL |
+| Natürlich Autos                |        NULL |
+| ANG Resellers                  |        NULL |
+| Messner Shopping Network       |        NULL |
+| Franken Gifts, Co              |        NULL |
+| BG&E Collectables              |        NULL |
+| Schuyler Imports               |        NULL |
+| Der Hund Imports               |        NULL |
+| Cramer Spezialitäten, Ltd      |        NULL |
+| Asian Treasures, Inc.          |        NULL |
+| SAR Distributors, Co           |        NULL |
+| Kommission Auto                |        NULL |
+| Lisboa Souveniers, Inc         |        NULL |
+| Precious Collectables          |        NULL |
+| Stuttgart Collectable Exchange |        NULL |
+| Feuer Online Stores, Inc       |        NULL |
+| Warburg Exchange               |        NULL |
+| Anton Designs, Ltd.            |        NULL |
+| Mit Vergnügen & Co.            |        NULL |
+| Kremlin Collectables, Co.      |        NULL |
+| Raanan Stores, Inc             |        NULL |
++--------------------------------+-------------+
+24 rows in set (0.00 sec)
+
+17. Self Join
+SelfJoin:Melakukan join didalam tabelnya sendiri
+mysql> describe employees;
++----------------+--------------+------+-----+---------+-------+
+| Field          | Type         | Null | Key | Default | Extra |
++----------------+--------------+------+-----+---------+-------+
+| employeeNumber | int(11)      | NO   | PRI | NULL    |       |
+| lastName       | varchar(50)  | NO   |     | NULL    |       |
+| firstName      | varchar(50)  | NO   |     | NULL    |       |
+| extension      | varchar(10)  | NO   |     | NULL    |       |
+| email          | varchar(100) | NO   |     | NULL    |       |
+| officeCode     | varchar(10)  | NO   | MUL | NULL    |       |
+| reportsTo      | int(11)      | YES  | MUL | NULL    |       |
+| jobTitle       | varchar(50)  | NO   |     | NULL    |       |
++----------------+--------------+------+-----+---------+-------+
+8 rows in set (0.03 sec)
+
+mysql> select employeeNumber,firstName,reportsTo,jobTitle from employees;
++----------------+-----------+-----------+----------------------+
+| employeeNumber | firstName | reportsTo | jobTitle             |
++----------------+-----------+-----------+----------------------+
+|           1002 | Diane     |      NULL | President            |
+|           1056 | Mary      |      1002 | VP Sales             |
+|           1076 | Jeff      |      1002 | VP Marketing         |
+|           1088 | William   |      1056 | Sales Manager (APAC) |
+|           1102 | Gerard    |      1056 | Sale Manager (EMEA)  |
+|           1143 | Anthony   |      1056 | Sales Manager (NA)   |
+|           1165 | Leslie    |      1143 | Sales Rep            |
+|           1166 | Leslie    |      1143 | Sales Rep            |
+|           1188 | Julie     |      1143 | Sales Rep            |
+|           1216 | Steve     |      1143 | Sales Rep            |
+|           1286 | Foon Yue  |      1143 | Sales Rep            |
+|           1323 | George    |      1143 | Sales Rep            |
+|           1337 | Loui      |      1102 | Sales Rep            |
+|           1370 | Gerard    |      1102 | Sales Rep            |
+|           1401 | Pamela    |      1102 | Sales Rep            |
+|           1501 | Larry     |      1102 | Sales Rep            |
+|           1504 | Barry     |      1102 | Sales Rep            |
+|           1611 | Andy      |      1088 | Sales Rep            |
+|           1612 | Peter     |      1088 | Sales Rep            |
+|           1619 | Tom       |      1088 | Sales Rep            |
+|           1621 | Mami      |      1056 | Sales Rep            |
+|           1625 | Yoshimi   |      1621 | Sales Rep            |
+|           1702 | Martin    |      1102 | Sales Rep            |
++----------------+-----------+-----------+----------------------+
+23 rows in set (0.00 sec)
+
+mysql> select a.firstName,a.jobTitle,b.firstName,b.jobTitle
+    -> FROM employees AS a INNER JOIN employees AS b
+    -> ON a.employeeNumber = b.reportsTo;
+NB : Melakukan Join terhadap tabelnya sendiri
+    b.firstName = Bawahan dari a.firstName
++-----------+----------------------+-----------+----------------------+
+| firstName | jobTitle             | firstName | jobTitle             |
++-----------+----------------------+-----------+----------------------+
+| Diane     | President            | Mary      | VP Sales             |
+| Diane     | President            | Jeff      | VP Marketing         |
+| Mary      | VP Sales             | William   | Sales Manager (APAC) |
+| Mary      | VP Sales             | Gerard    | Sale Manager (EMEA)  |
+| Mary      | VP Sales             | Anthony   | Sales Manager (NA)   |
+| Mary      | VP Sales             | Mami      | Sales Rep            |
+| William   | Sales Manager (APAC) | Andy      | Sales Rep            |
+| William   | Sales Manager (APAC) | Peter     | Sales Rep            |
+| William   | Sales Manager (APAC) | Tom       | Sales Rep            |
+| Gerard    | Sale Manager (EMEA)  | Loui      | Sales Rep            |
+| Gerard    | Sale Manager (EMEA)  | Gerard    | Sales Rep            |
+| Gerard    | Sale Manager (EMEA)  | Pamela    | Sales Rep            |
+| Gerard    | Sale Manager (EMEA)  | Larry     | Sales Rep            |
+| Gerard    | Sale Manager (EMEA)  | Barry     | Sales Rep            |
+| Gerard    | Sale Manager (EMEA)  | Martin    | Sales Rep            |
+| Anthony   | Sales Manager (NA)   | Leslie    | Sales Rep            |
+| Anthony   | Sales Manager (NA)   | Leslie    | Sales Rep            |
+| Anthony   | Sales Manager (NA)   | Julie     | Sales Rep            |
+| Anthony   | Sales Manager (NA)   | Steve     | Sales Rep            |
+| Anthony   | Sales Manager (NA)   | Foon Yue  | Sales Rep            |
+| Anthony   | Sales Manager (NA)   | George    | Sales Rep            |
+| Mami      | Sales Rep            | Yoshimi   | Sales Rep            |
++-----------+----------------------+-----------+----------------------+
+22 rows in set (0.01 sec)
+mysql> select a.firstName,a.jobTitle,b.firstName,b.jobTitle
+    -> FROM employees AS a LEFT JOIN employees AS b
+    -> ON a.employeeNumber = b.reportsTo;
+NB : Tetap menampilkan data karyawan meskipun tidak mempunyai bawahan (NULL) menggunakan LEFTJOIN
++-----------+----------------------+-----------+----------------------+
+| firstName | jobTitle             | firstName | jobTitle             |
++-----------+----------------------+-----------+----------------------+
+| Diane     | President            | Mary      | VP Sales             |
+| Diane     | President            | Jeff      | VP Marketing         |
+| Mary      | VP Sales             | William   | Sales Manager (APAC) |
+| Mary      | VP Sales             | Gerard    | Sale Manager (EMEA)  |
+| Mary      | VP Sales             | Anthony   | Sales Manager (NA)   |
+| Mary      | VP Sales             | Mami      | Sales Rep            |
+| Jeff      | VP Marketing         | NULL      | NULL                 |
+| William   | Sales Manager (APAC) | Andy      | Sales Rep            |
+| William   | Sales Manager (APAC) | Peter     | Sales Rep            |
+| William   | Sales Manager (APAC) | Tom       | Sales Rep            |
+| Gerard    | Sale Manager (EMEA)  | Loui      | Sales Rep            |
+| Gerard    | Sale Manager (EMEA)  | Gerard    | Sales Rep            |
+| Gerard    | Sale Manager (EMEA)  | Pamela    | Sales Rep            |
+| Gerard    | Sale Manager (EMEA)  | Larry     | Sales Rep            |
+| Gerard    | Sale Manager (EMEA)  | Barry     | Sales Rep            |
+| Gerard    | Sale Manager (EMEA)  | Martin    | Sales Rep            |
+| Anthony   | Sales Manager (NA)   | Leslie    | Sales Rep            |
+| Anthony   | Sales Manager (NA)   | Leslie    | Sales Rep            |
+| Anthony   | Sales Manager (NA)   | Julie     | Sales Rep            |
+| Anthony   | Sales Manager (NA)   | Steve     | Sales Rep            |
+| Anthony   | Sales Manager (NA)   | Foon Yue  | Sales Rep            |
+| Anthony   | Sales Manager (NA)   | George    | Sales Rep            |
+| Leslie    | Sales Rep            | NULL      | NULL                 |
+| Leslie    | Sales Rep            | NULL      | NULL                 |
+| Julie     | Sales Rep            | NULL      | NULL                 |
+| Steve     | Sales Rep            | NULL      | NULL                 |
+| Foon Yue  | Sales Rep            | NULL      | NULL                 |
+| George    | Sales Rep            | NULL      | NULL                 |
+| Loui      | Sales Rep            | NULL      | NULL                 |
+| Gerard    | Sales Rep            | NULL      | NULL                 |
+| Pamela    | Sales Rep            | NULL      | NULL                 |
+| Larry     | Sales Rep            | NULL      | NULL                 |
+| Barry     | Sales Rep            | NULL      | NULL                 |
+| Andy      | Sales Rep            | NULL      | NULL                 |
+| Peter     | Sales Rep            | NULL      | NULL                 |
+| Tom       | Sales Rep            | NULL      | NULL                 |
+| Mami      | Sales Rep            | Yoshimi   | Sales Rep            |
+| Yoshimi   | Sales Rep            | NULL      | NULL                 |
+| Martin    | Sales Rep            | NULL      | NULL                 |
++-----------+----------------------+-----------+----------------------+
+39 rows in set (0.00 sec)
+
+18. Fungsi Agregasi
+Fungsi Agregagsi adalah fungsi yg akan melakukan sejumlah kalkulasi kepada sekumpulan data lalu akan dikembalikan sebuah hasil
+biasanya sebuah hasil tersebut adalah sebuah value(single value).
+mysql> select firstName,lastName
+    -> from employees JOIN offices
+    -> USING (officeCode)
+    -> WHERE city='Boston';
++-----------+-----------+
+| firstName | lastName  |
++-----------+-----------+
+| Julie     | Firrelli  |
+| Steve     | Patterson |
++-----------+-----------+
+2 rows in set (0.00 sec)
+a. COUNT
+COUNT(*) Fungsinya untuk menghitung cacah (berapa banyak) data
+Contoh:Menghitung banyak karyawan yang berasal dari boston
+mysql> SELECT COUNT(*)
+    -> from employees JOIN offices
+    -> USING (officeCode)
+    -> WHERE city='Boston';
++----------+
+| COUNT(*) |
++----------+
+|        2 |
++----------+
+1 row in set (0.00 sec)
+
+mysql> SELECT COUNT(*) AS banyakKaryawan
+    -> from employees JOIN offices
+    -> USING (officeCode)
+    -> WHERE city='Boston';
++----------------+
+| banyakKaryawan |
++----------------+
+|              2 |
++----------------+
+1 row in set (0.00 sec)
+NB : COUNT(*) Fungsinya untuk menghitung cacah (berapa banyak) data
+Contoh:Menghitung banyak karyawan yang berasal dari boston
+
+b. SUM
+SUM fungsinya uuntuk menghitung jumlah data
+Contoh:Menghitung jumlah pemasukkan pada tahun 2003
+
+mysql> describe payments;
++----------------+---------------+------+-----+---------+-------+
+| Field          | Type          | Null | Key | Default | Extra |
++----------------+---------------+------+-----+---------+-------+
+| customerNumber | int(11)       | NO   | PRI | NULL    |       |
+| checkNumber    | varchar(50)   | NO   | PRI | NULL    |       |
+| paymentDate    | date          | NO   |     | NULL    |       |
+| amount         | decimal(10,2) | NO   |     | NULL    |       |
++----------------+---------------+------+-----+---------+-------+
+4 rows in set (0.03 sec)
+
+mysql> select amount,paymentDate FROM payments
+    -> WHERE YEAR(paymentDate)=2003;
++-----------+-------------+
+| amount    | paymentDate |
++-----------+-------------+
+|  14571.44 | 2003-06-05  |
+|  32641.98 | 2003-06-06  |
+|  45864.03 | 2003-05-20  |
+|   7565.08 | 2003-05-31  |
+|  50218.95 | 2003-02-16  |
+|   1491.38 | 2003-10-28  |
+|  11044.30 | 2003-04-11  |
+| 111654.40 | 2003-08-15  |
+|  45084.38 | 2003-11-25  |
+|  10549.01 | 2003-01-28  |
+|  24101.81 | 2003-10-18  |
+|  23923.93 | 2003-12-11  |
+|  16537.85 | 2003-04-09  |
+|  22292.62 | 2003-03-12  |
+|  36251.03 | 2003-07-19  |
+|  49539.37 | 2003-10-26  |
+|  40206.20 | 2003-02-25  |
+NB : YEAR adalah Fungsi utk melihat tahun yg digunakan pada tipe data date
+
+mysql> SELECT SUM(amount) AS jumlah_pembayaran_2003 FROM payments
+    -> WHERE YEAR(paymentDate)=2003;
++------------------------+
+| jumlah_pembayaran_2003 |
++------------------------+
+|             3250217.70 |
++------------------------+
+1 row in set (0.00 sec)
+NB : SUM fungsinya untuk menghitung jumlah pemayaran pada tahun 2003
+
+c. AVG (Average)
+AVG fungsinya untuk menghitung rata - rata nilai
+Contoh:Hitung rata - rata harga beli kendaraan Motorcycles
+
+mysql> describe products;
++--------------------+---------------+------+-----+---------+-------+
+| Field              | Type          | Null | Key | Default | Extra |
++--------------------+---------------+------+-----+---------+-------+
+| productCode        | varchar(15)   | NO   | PRI | NULL    |       |
+| productName        | varchar(70)   | NO   |     | NULL    |       |
+| productLine        | varchar(50)   | NO   | MUL | NULL    |       |
+| productScale       | varchar(10)   | NO   |     | NULL    |       |
+| productVendor      | varchar(50)   | NO   |     | NULL    |       |
+| productDescription | text          | NO   |     | NULL    |       |
+| quantityInStock    | smallint(6)   | NO   |     | NULL    |       |
+| buyPrice           | decimal(10,2) | NO   |     | NULL    |       |
+| MSRP               | decimal(10,2) | NO   |     | NULL    |       |
++--------------------+---------------+------+-----+---------+-------+
+9 rows in set (0.03 sec)
+
+mysql> SELECT AVG(buyPrice) AS rata_harga_motor
+    -> FROM products
+    -> WHERE productLine = 'Motorcycles';
++------------------+
+| rata_harga_motor |
++------------------+
+|        50.685385 |
++------------------+
+1 row in set (0.00 sec)
+NB : AVG Menghitung rata - rata harga motor pada produk Motorcycles 
+
+d. MIN 
+MIN fungsinya untuk mencari minimum nilai
+Contoh:Harga jual produk paling murah
+
+mysql> SELECT MIN(MSRP) FROM products;
++-----------+
+| MIN(MSRP) |
++-----------+
+|     33.19 |
++-----------+
+1 row in set (0.05 sec)
+NB : MSRP = Harga Jual
+
+e. MAX
+MAX fungsinya untuk mencari maksimum nilai 
+Contoh: Harga jual produk Classic Cars paling mahal
+
+mysql> SELECT MAX(MSRP) FROM products
+    -> WHERE productLine = 'Classic Cars';
++-----------+
+| MAX(MSRP) |
++-----------+
+|    214.30 |
++-----------+
+1 row in set (0.00 sec)
+NB  : MSRP = Harga Jual
+
+19. GroupBy
+GroupBy biasa digunakan untuk mengelompokkan data berdasarkan kolom tertentu
+Fungsi GroupBy biasa digunakan bersama fungsi agregasi
+
+a. Menggunakan Count(*)
+mysql> SELECT city,firstName,lastName
+    -> FROM employees JOIN offices
+    -> USING (officeCode);
++---------------+-----------+-----------+
+| city          | firstName | lastName  |
++---------------+-----------+-----------+
+| San Francisco | Diane     | Murphy    |
+| San Francisco | Mary      | Patterson |
+| San Francisco | Jeff      | Firrelli  |
+| San Francisco | Anthony   | Bow       |
+| San Francisco | Leslie    | Jennings  |
+| San Francisco | Leslie    | Thompson  |
+| Boston        | Julie     | Firrelli  |
+| Boston        | Steve     | Patterson |
+| NYC           | Foon Yue  | Tseng     |
+| NYC           | George    | Vanauf    |
+| Paris         | Gerard    | Bondur    |
+| Paris         | Loui      | Bondur    |
+| Paris         | Gerard    | Hernandez |
+| Paris         | Pamela    | Castillo  |
+| Paris         | Martin    | Gerard    |
+| Tokyo         | Mami      | Nishi     |
+| Tokyo         | Yoshimi   | Kato      |
+| Sydney        | William   | Patterson |
+| Sydney        | Andy      | Fixter    |
+| Sydney        | Peter     | Marsh     |
+| Sydney        | Tom       | King      |
+| London        | Larry     | Bott      |
+| London        | Barry     | Jones     |
++---------------+-----------+-----------+
+23 rows in set (0.00 sec)
+
+mysql> SELECT city,COUNT(*) AS banyak_karyawan
+    -> FROM employees JOIN offices
+    -> USING (officeCode)
+    -> GROUP BY city;
++---------------+-----------------+
+| city          | banyak_karyawan |
++---------------+-----------------+
+| Boston        |               2 |
+| London        |               2 |
+| NYC           |               2 |
+| Paris         |               5 |
+| San Francisco |               6 |
+| Sydney        |               4 |
+| Tokyo         |               2 |
++---------------+-----------------+
+7 rows in set (0.00 sec)
+NB : Mengelompokkan data city menggunakan COUNT(*)
+b. Menggunakan SUM
+mysql> describe payments;
++----------------+---------------+------+-----+---------+-------+
+| Field          | Type          | Null | Key | Default | Extra |
++----------------+---------------+------+-----+---------+-------+
+| customerNumber | int(11)       | NO   | PRI | NULL    |       |
+| checkNumber    | varchar(50)   | NO   | PRI | NULL    |       |
+| paymentDate    | date          | NO   |     | NULL    |       |
+| amount         | decimal(10,2) | NO   |     | NULL    |       |
++----------------+---------------+------+-----+---------+-------+
+4 rows in set (0.00 sec)
+
+mysql> SELECT YEAR(paymentDate),amount FROM payments;
+NB : Mengambil data tahun menggunakan fungsi YEAR pada kolom paymentDate
++-------------------+-----------+
+| YEAR(paymentDate) | amount    |
++-------------------+-----------+
+|              2004 |   6066.78 |
+|              2003 |  14571.44 |
+|              2004 |   1676.14 |
+|              2004 |  14191.12 |
+|              2003 |  32641.98 |
+|              2004 |  33347.88 |
+|              2003 |  45864.03 |
+|              2004 |  82261.22 |
+|              2003 |   7565.08 |
+|              2004 |  44894.74 |
+|              2004 |  19501.82 |
+|              2004 |  47924.19 |
+|              2005 |  49523.67 |
+|              2003 |  50218.95 |
+|              2003 |   1491.38 |
+|              2004 |  17876.32 |
+|              2004 |  34638.14 |
+|              2005 | 101244.59 |
+|              2004 |  85410.87 |
+
+mysql> SELECT YEAR(paymentDate) AS Tahun,SUM(amount) AS jumlah_pemasukan
+    -> FROM payments
+    -> GROUP BY YEAR(paymentDate);
++-------+------------------+
+| Tahun | jumlah_pemasukan |
++-------+------------------+
+|  2003 |       3250217.70 |
+|  2004 |       4313328.25 |
+|  2005 |       1290293.28 |
++-------+------------------+
+NB: Menghitung jumlah pemasukan berdasarkan tahun menggunakan fungsi SUM
+c.Menggunakan AVG
+
+mysql> describe products;
++--------------------+---------------+------+-----+---------+-------+
+| Field              | Type          | Null | Key | Default | Extra |
++--------------------+---------------+------+-----+---------+-------+
+| productCode        | varchar(15)   | NO   | PRI | NULL    |       |
+| productName        | varchar(70)   | NO   |     | NULL    |       |
+| productLine        | varchar(50)   | NO   | MUL | NULL    |       |
+| productScale       | varchar(10)   | NO   |     | NULL    |       |
+| productVendor      | varchar(50)   | NO   |     | NULL    |       |
+| productDescription | text          | NO   |     | NULL    |       |
+| quantityInStock    | smallint(6)   | NO   |     | NULL    |       |
+| buyPrice           | decimal(10,2) | NO   |     | NULL    |       |
+| MSRP               | decimal(10,2) | NO   |     | NULL    |       |
++--------------------+---------------+------+-----+---------+-------+
+9 rows in set (0.01 sec)
+
+mysql> SELECT productLine,buyPrice FROM products;
++------------------+----------+
+| productLine      | buyPrice |
++------------------+----------+
+| Motorcycles      |    48.81 |
+| Classic Cars     |    98.58 |
+| Motorcycles      |    68.99 |
+| Motorcycles      |    91.02 |
+| Classic Cars     |    85.68 |
+| Classic Cars     |   103.42 |
+| Classic Cars     |    95.34 |
+| Classic Cars     |    95.59 |
+| Trucks and Buses |    77.90 |
+| Motorcycles      |    66.27 |
+| Classic Cars     |    89.14 |
+| Classic Cars     |    75.16 |
+| Classic Cars     |    83.05 |
+| Classic Cars     |    31.92 |
+| Trucks and Buses |    55.70 |
+
+mysql> SELECT productLine,avg(buyPrice) FROM products
+    -> GROUP BY productLine;
++------------------+---------------+
+| productLine      | avg(buyPrice) |
++------------------+---------------+
+| Classic Cars     |     64.446316 |
+| Motorcycles      |     50.685385 |
+| Planes           |     49.629167 |
+| Ships            |     47.007778 |
+| Trains           |     43.923333 |
+| Trucks and Buses |     56.329091 |
+| Vintage Cars     |     46.066250 |
++------------------+---------------+
+7 rows in set (0.00 sec)
+NB : Menghitung rata" (avg)buyPrice dengan mengelompokan data (GROUP BY)productLine
+d. Menggunakan MIN
+
+mysql> SELECT productLine,MIN(buyPrice) FROM products
+    -> GROUP BY productLine;
++------------------+---------------+
+| productLine      | MIN(buyPrice) |
++------------------+---------------+
+| Classic Cars     |         15.91 |
+| Motorcycles      |         24.14 |
+| Planes           |         29.34 |
+| Ships            |         33.30 |
+| Trains           |         26.72 |
+| Trucks and Buses |         24.92 |
+| Vintage Cars     |         20.61 |
++------------------+---------------+
+7 rows in set (0.00 sec)
+NB : Menghitung harga Minimum (MIN)buyPrice dengan mengelompoka data (GROUP BY)productLine
+e. Menggunakan MAX
+mysql> describe payments;
++----------------+---------------+------+-----+---------+-------+
+| Field          | Type          | Null | Key | Default | Extra |
++----------------+---------------+------+-----+---------+-------+
+| customerNumber | int(11)       | NO   | PRI | NULL    |       |
+| checkNumber    | varchar(50)   | NO   | PRI | NULL    |       |
+| paymentDate    | date          | NO   |     | NULL    |       |
+| amount         | decimal(10,2) | NO   |     | NULL    |       |
++----------------+---------------+------+-----+---------+-------+
+4 rows in set (0.03 sec)
+
+mysql> SELECT YEAR(paymentDate) AS Tahun,MAX(amount) AS pembayaran_terbesar
+    -> FROM payments
+    -> GROUP BY YEAR(paymentDate);
++-------+---------------------+
+| Tahun | pembayaran_terbesar |
++-------+---------------------+
+|  2003 |           111654.40 |
+|  2004 |           116208.40 |
+|  2005 |           120166.58 |
++-------+---------------------+
+3 rows in set (0.00 sec)
+NB : Menghitung pembayaran terbesar(MAX)amount dengan mengelompokan data (GROUP BY) berdasarkan Tahun YEAR(paymentDate)
+20. Having
+Having adalah filtering yang dilakukan setelah query diatasnya dijalankan
+Contoh soal: Hitung jumlah pemasukan pada tahun 2003 di setiap bulannya yang kurang dari 150.000
+
+mysql> describe payments;
++----------------+---------------+------+-----+---------+-------+
+| Field          | Type          | Null | Key | Default | Extra |
++----------------+---------------+------+-----+---------+-------+
+| customerNumber | int(11)       | NO   | PRI | NULL    |       |
+| checkNumber    | varchar(50)   | NO   | PRI | NULL    |       |
+| paymentDate    | date          | NO   |     | NULL    |       |
+| amount         | decimal(10,2) | NO   |     | NULL    |       |
++----------------+---------------+------+-----+---------+-------+
+4 rows in set (0.03 sec)
+mysql> SELECT MONTH(paymentDate) AS bulan,SUM(amount) AS jumlah FROM payments
+    -> WHERE YEAR(paymentDate)=2003
+    -> GROUP BY MONTH(paymentDate);
++-------+-----------+
+| bulan | jumlah    |
++-------+-----------+
+|     1 |  26267.62 |
+|     2 | 144384.36 |
+|     3 | 199704.48 |
+|     4 | 136313.92 |
+|     5 | 159881.97 |
+|     6 | 180218.98 |
+|     7 | 158247.00 |
+|     8 | 246204.86 |
+|     9 | 161206.23 |
+|    10 | 316857.96 |
+|    11 | 694292.68 |
+|    12 | 826637.64 |
++-------+-----------+
+12 rows in set (0.00 sec)
+NB : Menghitung jumlah pemasukan pada tahun 2003 di setiap bulannya
+     MONTH fungsi mysql untuk menghitung bulan pada tipe data date
+
+mysql> SELECT MONTH(paymentDate) AS bulan,SUM(amount) AS jumlah FROM payments
+    -> WHERE YEAR(paymentDate)=2003
+    -> GROUP BY MONTH(paymentDate)
+    -> HAVING jumlah<150000;
++-------+-----------+
+| bulan | jumlah    |
++-------+-----------+
+|     1 |  26267.62 |
+|     2 | 144384.36 |
+|     4 | 136313.92 |
++-------+-----------+
+3 rows in set (0.00 sec)
+NB : Menghitung jumlah pemasukan pada tahun 2003 di setiap bulannya yang kurang dari 150.000
+
+21. SubQuery
+SubQuery adalah Query yg berada didalam Query lainnya atau biasa juga disebut nested Query
+nested Query biasa digunakan untuk menyelesaikan permasalahan query yang sedikit lebih kompleks
+Contoh: 1.Siapa karyawan yang melaporkan (reportsTo)ke Diane(Misalkan blm tau employeeNumber nya)
+	2.Tampilkan nama produk Classic Cars yang harga belinya di atas rata - rata
+
+1.Siapa karyawan yang melaporkan (reportsTo)ke Diane(Misalkan blm tau employeeNumber nya) 
+mysql> SELECT employeeNumber,firstName,lastName,reportsTo FROM employees;
++----------------+-----------+-----------+-----------+
+| employeeNumber | firstName | lastName  | reportsTo |
++----------------+-----------+-----------+-----------+
+|           1002 | Diane     | Murphy    |      NULL |
+|           1056 | Mary      | Patterson |      1002 |
+|           1076 | Jeff      | Firrelli  |      1002 |
+|           1088 | William   | Patterson |      1056 |
+|           1102 | Gerard    | Bondur    |      1056 |
+|           1143 | Anthony   | Bow       |      1056 |
+|           1165 | Leslie    | Jennings  |      1143 |
+|           1166 | Leslie    | Thompson  |      1143 |
+|           1188 | Julie     | Firrelli  |      1143 |
+|           1216 | Steve     | Patterson |      1143 |
+|           1286 | Foon Yue  | Tseng     |      1143 |
+|           1323 | George    | Vanauf    |      1143 |
+|           1337 | Loui      | Bondur    |      1102 |
+|           1370 | Gerard    | Hernandez |      1102 |
+|           1401 | Pamela    | Castillo  |      1102 |
+|           1501 | Larry     | Bott      |      1102 |
+|           1504 | Barry     | Jones     |      1102 |
+|           1611 | Andy      | Fixter    |      1088 |
+|           1612 | Peter     | Marsh     |      1088 |
+|           1619 | Tom       | King      |      1088 |
+|           1621 | Mami      | Nishi     |      1056 |
+|           1625 | Yoshimi   | Kato      |      1621 |
+|           1702 | Martin    | Gerard    |      1102 |
++----------------+-----------+-----------+-----------+
+23 rows in set (0.06 sec)
+
+mysql> SELECT employeeNumber FROM employees
+    -> WHERE firstName='Diane' AND lastName='Murphy';
++----------------+
+| employeeNumber |
++----------------+
+|           1002 |
++----------------+
+1 row in set (0.00 sec)
+
+mysql> SELECT firstName,lastName
+    -> FROM employees
+    -> WHERE reportsTo IN (
+    -> SELECT employeeNumber FROM employees
+    -> WHERE firstName='Diane' AND lastName='Murphy');
++-----------+-----------+
+| firstName | lastName  |
++-----------+-----------+
+| Mary      | Patterson |
+| Jeff      | Firrelli  |
++-----------+-----------+
+2 rows in set (0.05 sec)
+NB : Membuat SubQuery untuk mem filter kolom reportsTo
+Jika IN maka row nya bisa lebih dari 1 data namun hanya 1 kolom
+jika menggunakan operasi <,=,> maka yg keluar harus 1 kolom 1 rows
+
+2.Tampilkan nama produk Classic Cars yang harga belinya di atas rata - rata
+mysql> SELECT AVG(buyPrice) FROM products
+    -> WHERE productLine='Classic Cars';
++---------------+
+| AVG(buyPrice) |
++---------------+
+|     64.446316 |
++---------------+
+1 row in set (0.08 sec)
+
+mysql> SELECT productName,buyPrice from products
+    -> WHERE productLine='Classic Cars' AND buyPrice > (
+    -> SELECT AVG(buyPrice) FROM products
+    -> WHERE productLine='Classic Cars');
+NB : Contoh penggunaan sub query untuk memfilter nama produk Classic Cars yang harga belinya di atas rata - rata
++-----------------------------------+----------+
+| productName                       | buyPrice |
++-----------------------------------+----------+
+| 1952 Alpine Renault 1300          |    98.58 |
+| 1972 Alfa Romeo GTA               |    85.68 |
+| 1962 LanciaA Delta 16V            |   103.42 |
+| 1968 Ford Mustang                 |    95.34 |
+| 2001 Ferrari Enzo                 |    95.59 |
+| 1969 Corvair Monza                |    89.14 |
+| 1968 Dodge Charger                |    75.16 |
+| 1969 Ford Falcon                  |    83.05 |
+| 1993 Mazda RX-7                   |    83.51 |
+| 1965 Aston Martin DB5             |    65.96 |
+| 1995 Honda Civic                  |    93.89 |
+| 1998 Chrysler Plymouth Prowler    |   101.51 |
+| 1992 Ferrari 360 Spider red       |    77.90 |
+| 1976 Ford Gran Torino             |    73.49 |
+| 1970 Triumph Spitfire             |    91.92 |
+| 1957 Corvette Convertible         |    69.93 |
+| 1952 Citroen-15CV                 |    72.82 |
+| 1956 Porsche 356A Coupe           |    98.30 |
+| 1992 Porsche Cayenne Turbo Silver |    69.78 |
++-----------------------------------+----------+
+19 rows in set (0.00 sec)
+
+22. SubQuery From
+SubQuery tidak hanya bisa digunakan untuk filtering pada where namun bisa juga digunakan sebagai sumber data yang digunakan pada sintaks from
+Contoh Permasalahan : 1. Tampilkan Rata - rata penjualan perbulan tertinggi dan terendah dari tahun 2003
+
+mysql> SELECT MONTH(paymentDate) AS Bulan,MIN(amount) AS Terendah,MAX(amount) AS Tertinggi FROM payments
+    -> WHERE YEAR(paymentDate)=2003
+    -> GROUP BY MONTH(paymentDate);
++-------+----------+-----------+
+| Bulan | Terendah | Tertinggi |
++-------+----------+-----------+
+|     1 |  5494.78 |  10549.01 |
+|     2 | 40206.20 |  53959.21 |ah
+|     3 | 22292.62 |  52151.81 |
+|     4 |  1627.56 |  44380.15 |
+|     5 |  3101.40 |  50824.66 |
+|     6 | 14571.44 |  58841.35 |
+|     7 |  2880.00 |  36251.03 |
+|     8 |  1128.20 | 111654.40 |
+|     9 |  6631.36 |  50342.74 |
+|    10 |  1491.38 |  49539.37 |
+|    11 |  9977.85 |  85559.12 |
+|    12 |  3879.96 | 105743.00 |
++-------+----------+-----------+
+12 rows in set (0.06 sec)
+
+mysql> SELECT AVG(Terendah) AS rata_terendah,AVG(Tertinggi) AS rata_tertinggi
+    -> FROM
+    -> (SELECT MONTH(paymentDate) AS Bulan,MIN(amount) AS Terendah,MAX(amount) AS Tertinggi FROM payments
+    -> WHERE YEAR(paymentDate)=2003
+    -> GROUP BY MONTH(paymentDate)) AS tabel_baru;
++---------------+----------------+
+| rata_terendah | rata_tertinggi |
++---------------+----------------+
+|   9440.229167 |   59149.654167 |
++---------------+----------------+
+1 row in set (0.00 sec)
+NB : Menampilkan Rata - rata penjualan perbulan tertinggi dan terendah dari tahun 2003 Menggunakan SubQuery FROM 
+
+23. View	
+View adalah sebuah virtual tabel pada mysql,dimana virtualnya itu didefinisikan dari sebuah query select pada mysql
+Contoh : Membuat Views untuk menampilkan 10 besar produk terjual.
+
+mysql> SELECT productName,SUM(quantityOrdered) AS jumlah
+    -> FROM products JOIN orderdetails USING (productCode)
+    -> GROUP BY productCode
+    -> ORDER BY jumlah DESC
+    -> LIMIT 10;
++-----------------------------------------+--------+
+| productName                             | jumlah |
++-----------------------------------------+--------+
+| 1992 Ferrari 360 Spider red             |   1808 |
+| 1937 Lincoln Berline                    |   1111 |
+| American Airlines: MD-11S               |   1085 |
+| 1941 Chevrolet Special Deluxe Cabriolet |   1076 |
+| 1930 Buick Marquette Phaeton            |   1074 |
+| 1940s Ford truck                        |   1061 |
+| 1969 Harley Davidson Ultimate Chopper   |   1057 |
+| 1957 Chevy Pickup                       |   1056 |
+| 1964 Mercedes Tour Bus                  |   1053 |
+| 1956 Porsche 356A Coupe                 |   1052 |
++-----------------------------------------+--------+
+10 rows in set (0.14 sec)
+
+mysql> CREATE VIEW top10produk AS
+    -> SELECT productName,SUM(quantityOrdered) AS jumlah
+    -> FROM products JOIN orderdetails USING (productCode)
+    -> GROUP BY productCode
+    -> ORDER BY jumlah DESC
+    -> LIMIT 10;
+Query OK, 0 rows affected (0.06 sec)
+NB: Membuat VIEW dari query SELECT yang telah dibuat
+mysql> SHOW TABLES;
++-------------------------+
+| Tables_in_classicmodels |
++-------------------------+
+| customers               |
+| employees               |
+| offices                 |
+| orderdetails            |
+| orders                  |
+| payments                |
+| productlines            |
+| products                |
+| top10produk             |
++-------------------------+
+9 rows in set (0.00 sec)
+
+mysql> SHOW FULL TABLES;
++-------------------------+------------+
+| Tables_in_classicmodels | Table_type |
++-------------------------+------------+
+| customers               | BASE TABLE |
+| employees               | BASE TABLE |
+| offices                 | BASE TABLE |
+| orderdetails            | BASE TABLE |
+| orders                  | BASE TABLE |
+| payments                | BASE TABLE |
+| productlines            | BASE TABLE |
+| products                | BASE TABLE |
+| top10produk             | VIEW       |
++-------------------------+------------+
+9 rows in set (0.05 sec)
+
+
+mysql> SELECT * FROM top10produk;
++-----------------------------------------+--------+
+| productName                             | jumlah |
++-----------------------------------------+--------+
+| 1992 Ferrari 360 Spider red             |   1808 |
+| 1937 Lincoln Berline                    |   1111 |
+| American Airlines: MD-11S               |   1085 |
+| 1941 Chevrolet Special Deluxe Cabriolet |   1076 |
+| 1930 Buick Marquette Phaeton            |   1074 |
+| 1940s Ford truck                        |   1061 |
+| 1969 Harley Davidson Ultimate Chopper   |   1057 |
+| 1957 Chevy Pickup                       |   1056 |
+| 1964 Mercedes Tour Bus                  |   1053 |
+| 1956 Porsche 356A Coupe                 |   1052 |
++-----------------------------------------+--------+
+10 rows in set (0.00 sec)
+
+
+24. Soal 1 Tabel
+Penyelesaian permasalahan terkait dengan database classic models yg bersifat single entity(soal 1 tabel)
+
+a. Tampilkan daftar office diurutkan berdasarkan country,state dan city
+mysql> SELECT officeCode,country,state,city FROM offices
+    -> ORDER BY country,state,city;
++------------+-----------+------------+---------------+
+| officeCode | country   | state      | city          |
++------------+-----------+------------+---------------+
+| 6          | Australia | NULL       | Sydney        |
+| 4          | France    | NULL       | Paris         |
+| 5          | Japan     | Chiyoda-Ku | Tokyo         |
+| 7          | UK        | NULL       | London        |
+| 1          | USA       | CA         | San Francisco |
+| 2          | USA       | MA         | Boston        |
+| 3          | USA       | NY         | NYC           |
++------------+-----------+------------+---------------+
+7 rows in set (0.00 sec)
+
+b. Ada berapa orang karyawan yang ada diperusahaan
+mysql> SELECT COUNT(*) FROM employees;
++----------+
+| COUNT(*) |
++----------+
+|       23 |
++----------+
+1 row in set (0.00 sec)
+
+mysql> SELECT COUNT(*) AS banyak_karyawan FROM employees;
++-----------------+
+| banyak_karyawan |
++-----------------+
+|              23 |
++-----------------+
+1 row in set (0.00 sec)
+
+c. Berapa total pembayaran yang telah diterima 
+mysql> SELECT SUM(amount) AS Total FROM payments;
++------------+
+| Total      |
++------------+
+| 8853839.23 |
++------------+
+1 row in set (0.00 sec)
+mysql> SELECT FORMAT(SUM(amount),2) AS Total FROM payments;
++--------------+
+| Total        |
++--------------+
+| 8,853,839.23 |
++--------------+
+1 row in set (0.00 sec)
+NB : Format Angka 2 angka dibelakang koma
+
+d. Tampilkan productLine yang mengandung kata Car
+mysql> SELECT productLine FROM productLines
+    -> WHERE productLine LIKE "%Car%";
++--------------+
+| productLine  |
++--------------+
+| Classic Cars |
+| Vintage Cars |
++--------------+
+2 rows in set (0.00 sec)
+
+e. Laporkan total pembayaran pada 28 oktober 2004
+mysql> SELECT SUM(amount) FROM payments
+    -> WHERE paymentDate = '2004-10-28';
++-------------+
+| SUM(amount) |
++-------------+
+|    47411.33 |
++-------------+
+1 row in set (0.00 sec)
+mysql> SELECT FORMAT(SUM(amount),0) FROM payments
+    -> WHERE paymentDate = '2004-10-28';
++-----------------------+
+| FORMAT(SUM(amount),0) |
++-----------------------+
+| 47,411                |
++-----------------------+
+1 row in set (0.00 sec)
+mysql> SELECT FORMAT(SUM(amount),0) AS Total FROM payments
+    -> WHERE paymentDate = '2004-10-28';
++--------+
+| Total  |
++--------+
+| 47,411 |
++--------+
+1 row in set (0.00 sec)
+
+f. Laporkan pembayaran yang lebih dari 100.000 pada tanggal tersebut(2004-10-28)
+mysql> SELECT * FROM payments
+    -> WHERE paymentDate = '2004-10-28' AND amount > 100000;
+Empty set (0.00 sec)
+NB : Tidak Ada pembayaran yang lebih dari 100.000 pada tanggal tersebut
+mysql> SELECT * FROM payments
+    -> WHERE amount > 100000;
+NB : Jika dihilangkan paymentDate nya
++----------------+-------------+-------------+-----------+
+| customerNumber | checkNumber | paymentDate | amount    |
++----------------+-------------+-------------+-----------+
+|            124 | AE215433    | 2005-03-05  | 101244.59 |
+|            124 | KI131716    | 2003-08-15  | 111654.40 |
+|            141 | ID10962     | 2004-12-31  | 116208.40 |
+|            141 | JE105477    | 2005-03-18  | 120166.58 |
+|            148 | KM172879    | 2003-12-26  | 105743.00 |
++----------------+-------------+-------------+-----------+
+5 rows in set (0.00 sec)
+
+g. Tampilkan setiap produk untuk setiap productLine
+mysql> SELECT productLine,productName From products
+    -> ORDER BY productLine;
++------------------+---------------------------------------------+
+| productLine      | productName                                 |
++------------------+---------------------------------------------+
+| Classic Cars     | 1952 Alpine Renault 1300                    |
+| Classic Cars     | 1972 Alfa Romeo GTA                         |
+| Classic Cars     | 1962 LanciaA Delta 16V                      |
+| Classic Cars     | 1968 Ford Mustang                           |
+| Classic Cars     | 2001 Ferrari Enzo                           |
+| Classic Cars     | 1969 Corvair Monza                          |
+| Classic Cars     | 1968 Dodge Charger                          |
+| Classic Cars     | 1969 Ford Falcon                            |
+| Classic Cars     | 1970 Plymouth Hemi Cuda                     |
+| Classic Cars     | 1969 Dodge Charger                          |
+| Classic Cars     | 1993 Mazda RX-7                             |
+| Classic Cars     | 1965 Aston Martin DB5                       |
+
+SELECT productLine,GROUP_CONCAT(productName) From products
+    -> GROUP BY productLine
+    -> ORDER BY productLine;                                                     |
+| Trucks and Buses | 1958 Setra Bus,1957 Chevy Pickup,1940 Ford Pickup Truck,1964 Mercedes Tour Bus,1926 Ford Fire Engine,1940s Ford truck,1962 Volkswagen Microbus,1980’s GM Manhattan Express,1954 Greyhound Scenicruiser,1996 Peterbilt 379 Stake Bed with Outrigger,Diamond T620 Semi-Skirted Tanker                                                      |
+| Ships            | 1999 Yamaha Speed Boat,18th century schooner,The Schooner Bluenose,The Mayflower,HMS Bounty,The USS Constitution Ship,The Titanic,The Queen Mary,Pont Yacht                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| Trains           | Collectable Wooden Train,1950's Chicago Surface Lines Streetcar,1962 City of Detroit Streetcar                                                                                                                                                                          
+NB : Hanya menampilkan 1 rows productLine dengan banyak productName
+
+h. Ada berapa produk di setiap productLine
+mysql> SELECT productLine,COUNT(*) AS Banyak_Produk FROM products
+    -> GROUP BY productLine;
++------------------+---------------+
+| productLine      | Banyak_Produk |
++------------------+---------------+
+| Classic Cars     |            38 |
+| Motorcycles      |            13 |
+| Planes           |            12 |
+| Ships            |             9 |
+| Trains           |             3 |
+| Trucks and Buses |            11 |
+| Vintage Cars     |            24 |
++------------------+---------------+
+7 rows in set (0.00 sec)
+
+i. Berapa pembayaran minimum yang diterima
+mysql> SELECT MIN(amount) FROM payments;
++-------------+
+| MIN(amount) |
++-------------+
+|      615.45 |
++-------------+
+1 row in set (0.00 sec)
+
+j. Tampilkan pembayaran yang lebih besar dari 2 kali rata - rata pembayaran
+mysql> SELECT AVG(amount)*2 FROM payments;
++---------------+
+| AVG(amount)*2 |
++---------------+
+|  64863.291062 |
++---------------+
+1 row in set (0.00 sec)
+
+mysql> SELECT * FROM payments WHERE amount >
+    -> (SELECT AVG(amount)*2 FROM payments);
++----------------+-------------+-------------+-----------+
+| customerNumber | checkNumber | paymentDate | amount    |
++----------------+-------------+-------------+-----------+
+|            114 | MA765515    | 2004-12-15  |  82261.22 |
+|            124 | AE215433    | 2005-03-05  | 101244.59 |
+|            124 | BG255406    | 2004-08-28  |  85410.87 |
+|            124 | ET64396     | 2005-04-16  |  83598.04 |
+|            124 | KI131716    | 2003-08-15  | 111654.40 |
+|            141 | ID10962     | 2004-12-31  | 116208.40 |
+|            141 | IN446258    | 2005-03-25  |  65071.26 |
+|            141 | JE105477    | 2005-03-18  | 120166.58 |
+|            148 | KM172879    | 2003-12-26  | 105743.00 |
+|            167 | GN228846    | 2003-12-03  |  85024.46 |
+|            239 | NQ865547    | 2004-03-15  |  80375.24 |
+|            321 | DJ15149     | 2003-11-03  |  85559.12 |
+|            323 | AL493079    | 2005-05-23  |  75020.13 |
++----------------+-------------+-------------+-----------+
+13 rows in set (0.00 sec)
+
+k. Berapa rata - rata keuntungan pada produk (MSRP - buyPrice)
+mysql> SELECT MSRP-buyPrice FROM products;
++---------------+
+| MSRP-buyPrice |
++---------------+
+|         46.89 |
+|        115.72 |
+|         49.95 |
+|        102.64 |
+|         50.32 |
+|         44.32 |
+|         99.23 |
+|        112.21 |
+|         58.77 |
+|         84.35 |
+|         61.94 |
+|         42.28 |
+|         89.97 |
+|         47.88 |
+mysql> SELECT AVG(MSRP-buyPrice) AS Rata_Keuntungan FROM products;
++-----------------+
+| Rata_Keuntungan |
++-----------------+
+|       46.043545 |
++-----------------+
+1 row in set (0.00 sec)
+l. Berapa banyak produk unik tanpa duplikat yang dijual classicmodels
+mysql> SELECT DISTINCT productLine FROM products;
++------------------+
+| productLine      |
++------------------+
+| Classic Cars     |
+| Motorcycles      |
+| Planes           |
+| Ships            |
+| Trains           |
+| Trucks and Buses |
+| Vintage Cars     |
++------------------+
+7 rows in set (0.05 sec)
+
+m. Tampilkan nama dan kota customer yang tidak memiliki sales representative
+mysql> SELECT customerName,city,salesRepEmployeeNumber FROM customers
+    -> WHERE salesRepEmployeeNumber IS NULL;
++--------------------------------+------------------+------------------------+
+| customerName                   | city             | salesRepEmployeeNumber |
++--------------------------------+------------------+------------------------+
+| Havel & Zbyszek Co             | Warszawa         |                   NULL |
+| Porto Imports Co.              | Lisboa           |                   NULL |
+| Asian Shopping Network, Co     | Singapore        |                   NULL |
+| Natürlich Autos                | Cunewalde        |                   NULL |
+| ANG Resellers                  | Madrid           |                   NULL |
+| Messner Shopping Network       | Frankfurt        |                   NULL |
+| Franken Gifts, Co              | München          |                   NULL |
+| BG&E Collectables              | Fribourg         |                   NULL |
+| Schuyler Imports               | Amsterdam        |                   NULL |
+| Der Hund Imports               | Berlin           |                   NULL |
+| Cramer Spezialitäten, Ltd      | Brandenburg      |                   NULL |
+| Asian Treasures, Inc.          | Cork             |                   NULL |
+| SAR Distributors, Co           | Hatfield         |                   NULL |
+| Kommission Auto                | Münster          |                   NULL |
+| Lisboa Souveniers, Inc         | Lisboa           |                   NULL |
+| Stuttgart Collectable Exchange | Stuttgart        |                   NULL |
+| Feuer Online Stores, Inc       | Leipzig          |                   NULL |
+| Warburg Exchange               | Aachen           |                   NULL |
+| Anton Designs, Ltd.            | Madrid           |                   NULL |
+| Mit Vergnügen & Co.            | Mannheim         |                   NULL |
+| Kremlin Collectables, Co.      | Saint Petersburg |                   NULL |
+| Raanan Stores, Inc             | Herzlia          |                   NULL |
++--------------------------------+------------------+------------------------+
+22 rows in set (0.00 sec)
+
+n. Tampilkan nama beserta jabatan dari employee dengan title VP atau Manager
+
+mysql> SELECT CONCAT(firstName," ",lastName) AS Nama,jobTitle FROM employees
+    -> WHERE jobTitle LIKE "%VP%" OR jobTitle LIKE "%Manager%";
++-------------------+----------------------+
+| Nama              | jobTitle             |
++-------------------+----------------------+
+| Mary Patterson    | VP Sales             |
+| Jeff Firrelli     | VP Marketing         |
+| William Patterson | Sales Manager (APAC) |
+| Gerard Bondur     | Sale Manager (EMEA)  |
+| Anthony Bow       | Sales Manager (NA)   |
++-------------------+----------------------+
+5 rows in set (0.00 sec)
+NB : Concat menyatukan 2 kolom yang berbeda
+
+o. Order mana yang bernilai lebih dari 5000
+
+mysql> SELECT orderNumber,SUM(priceEach*quantityOrdered) AS total_order
+    -> FROM orderdetails
+    -> GROUP BY orderNumber
+    -> HAVING total_order>5000;
++-------------+-------------+
+| orderNumber | total_order |
++-------------+-------------+
+|       10100 |    10223.83 |
+|       10101 |    10549.01 |
+|       10102 |     5494.78 |
+|       10103 |    50218.95 |
+|       10104 |    40206.20 |
+|       10105 |    53959.21 |
+|       10106 |    52151.81 |
+|       10107 |    22292.62 |
+|       10108 |    51001.22 |
+|       10109 |    25833.14 |
+|       10110 |    48425.69 |
+|       10111 |    16537.85 |
+|       10112 |     7674.94 |
+|       10113 |    11044.30 |
+|       10114 |    33383.14 |
+|       10115 |    21665.98 |
+|       10117 |    44380.15 |
+|       10119 |    35826.33 |
+|       10120 |    45864.03 |
+|       10121 |    16700.47 |
+|       10122 |    50824.66 |
+|       10123 |    14571.44 |
+|       10124 |    32641.98 |
+|       10125 |     7565.08 |
+|       10126 |    57131.92 | 
+25. One Two Many
+a. Tampilkan Sales representatif dari setiap customer
+mysql> SELECT customerName,CONCAT(firstName," ",lastName)AS employeeName
+    -> FROM customers JOIN employees
+    -> ON salesRepEmployeeNumber = employeeNumber;
++------------------------------------+------------------+
+| customerName                       | employeeName     |
++------------------------------------+------------------+
+| Mini Gifts Distributors Ltd.       | Leslie Jennings  |
+| Mini Wheels Co.                    | Leslie Jennings  |
+| Technics Stores Inc.               | Leslie Jennings  |
+| Corporate Gift Ideas Co.           | Leslie Jennings  |
+| The Sharp Gifts Warehouse          | Leslie Jennings  |
+| Signal Collectibles Ltd.           | Leslie Jennings  |
+| Signal Gift Stores                 | Leslie Thompson  |
+| Toys4GrownUps.com                  | Leslie Thompson  |
+| Boards & Toys Co.                  | Leslie Thompson  |
+| Collectable Mini Designs Co.       | Leslie Thompson  |
+| Men 'R' US Retailers, Ltd.         | Leslie Thompson  |
+| West Coast Collectables Co.        | Leslie Thompson  |
+| Cambridge Collectables Co.         | Julie Firrelli   |
+| Online Mini Collectables           | Julie Firrelli   |
+| Mini Creations Ltd.                | Julie Firrelli   |
+| Classic Gift Ideas, Inc            | Julie Firrelli   |
+| Collectables For Less Inc.         | Julie Firrelli   |
+
+b. Tampilkan total pembayaran dari Atelier graphique
+mysql> SELECT SUM(amount)
+    -> FROM customers JOIN payments
+    -> USING (customerNumber)
+    -> WHERE customerName = 'Atelier graphique';
++-------------+
+| SUM(amount) |
++-------------+
+|    22314.36 |
++-------------+
+c. Tampilkan total pembayaran per tanggal
+mysql> SELECT paymentDate,SUM(amount) AS total
+    -> FROM payments
+    -> GROUP BY paymentDate;
++-------------+-----------+
+| paymentDate | total     |
++-------------+-----------+
+| 2003-01-16  |  10223.83 |
+| 2003-01-28  |  10549.01 |
+| 2003-01-30  |   5494.78 |
+| 2003-02-16  |  50218.95 |
+| 2003-02-20  |  53959.21 |
+| 2003-02-25  |  40206.20 |
+| 2003-03-02  |  52151.81 |
+| 2003-03-09  |  51001.22 |
+| 2003-03-12  |  22292.62 |
+| 2003-03-20  |  25833.14 |
+| 2003-03-27  |  48425.69 |
+| 2003-04-09  |  24212.79 |
+| 2003-04-11  |  11044.30 |
+| 2003-04-16  |  21665.98 |
+| 2003-04-19  |   1627.56 |
+| 2003-04-20  |  33383.14 |
+| 2003-04-22  |  44380.15 |
+d. Tampilkan produk yang belum pernah terjual
+Cara pertama : 
+
+mysql> SELECT DISTINCT productCode FROM orderdetails;
++-------------+
+| productCode |
++-------------+
+| S10_1678    |
+| S10_1949    |
+| S10_2016    |
+| S10_4698    |
+| S10_4757    |
+| S10_4962    |
+| S12_1099    |
+| S12_1108    |
+| S12_1666    |
+| S12_2823    |
+| S12_3148    |
+| S12_3380    |
+| S12_3891    |
+| S12_3990    |
+| S72_1253    |
+| S72_3212    |
++-------------+
+109 rows in set (0.08 sec)
+NB : Ada 109 produk yang terjual
+
+mysql> SELECT productCode,productName FROM products
+    -> WHERE productCode NOT IN (
+    -> SELECT DISTINCT productCode FROM orderdetails);
++-------------+-------------------+
+| productCode | productName       |
++-------------+-------------------+
+| S18_3233    | 1985 Toyota Supra |
++-------------+-------------------+
+1 row in set (0.06 sec)
+NB:Produk yang blm pernah terjual adalah Toyota Supra
+
+Cara Kedua:
+mysql> SELECT productCode,productName,orderNumber
+    -> FROM products LEFT JOIN orderdetails
+    -> USING (productCode)
+    -> WHERE orderNumber IS NULL;
++-------------+-------------------+-------------+
+| productCode | productName       | orderNumber |
++-------------+-------------------+-------------+
+| S18_3233    | 1985 Toyota Supra |        NULL |
++-------------+-------------------+-------------+
+1 row in set (0.00 sec)
+e. Tampilkan jumlah yang terbayar per tiap customer
+
+mysql> SELECT customerNumber,customerName,SUM(amount) AS total
+    -> FROM customers JOIN payments USING (customerNumber)
+    -> GROUP BY customerNumber;
++----------------+------------------------------------+-----------+
+| customerNumber | customerName                       | total     |
++----------------+------------------------------------+-----------+
+|            103 | Atelier graphique                  |  22314.36 |
+|            112 | Signal Gift Stores                 |  80180.98 |
+|            114 | Australian Collectors, Co.         | 180585.07 |
+|            119 | La Rochelle Gifts                  | 116949.68 |
+|            121 | Baane Mini Imports                 | 104224.79 |
+|            124 | Mini Gifts Distributors Ltd.       | 584188.24 |
+|            128 | Blauer See Auto, Co.               |  75937.76 |
+|            129 | Mini Wheels Co.                    |  66710.56 |
+|            131 | Land of Toys Inc.                  | 107639.94 |
+|            141 | Euro+ Shopping Channel             | 715738.98 |
+|            144 | Volvo Model Replicas, Co           |  43680.65 |
+|            145 | Danish Wholesale Imports           | 107446.50 |
+|            146 | Saveley & Henriot, Co.             | 130305.35 |
+|            148 | Dragon Souveniers, Ltd.            | 156251.03 |
+|            151 | Muscle Machine Inc                 | 177913.95 |
+|            157 | Diecast Classics Inc.              |  98509.25 |
+|            495 | Diecast Collectables               |  65541.74 |
+|            496 | Kelly's Gift Shop                  | 114497.19 |
++----------------+------------------------------------+-----------+
+98 rows in set (0.00 sec)
+
+f. Berapa Order yang sudah pernah dibuat oleh Herkku Gifts
+mysql> SELECT COUNT(*) AS jumlah_order
+    -> FROM customers JOIN orders USING (customerNumber)
+    -> WHERE customerName = 'Herkku Gifts';
++--------------+
+| jumlah_order |
++--------------+
+|            3 |
++--------------+
+1 row in set (0.08 sec)
+mysql> SELECT orderNumber AS jumlah_order
+    -> FROM customers JOIN orders USING (customerNumber)
+    -> WHERE customerName = 'Herkku Gifts';
++--------------+
+| jumlah_order |
++--------------+
+|        10181 |
+|        10188 |
+|        10289 |
++--------------+
+3 rows in set (0.01 sec)
+g. Tampilkan karyawan di Boston
+mysql> SELECT CONCAT(firstName," ",lastName) AS Nama,city
+    -> FROM employees JOIN offices
+    -> USING (officeCode)
+    -> WHERE city= 'Boston';
++-----------------+--------+
+| Nama            | city   |
++-----------------+--------+
+| Julie Firrelli  | Boston |
+| Steve Patterson | Boston |
++-----------------+--------+
+2 rows in set (0.00 sec)
+
+h. Tampilkan pembayaran atas customer yang lebih dari 100.000, urutkan dari pembayaran yang tertinggi
+mysql> SELECT customerName,amount
+    -> FROM customers JOIN payments
+    -> USING (customerNumber)
+    -> WHERE amount>100000
+    -> ORDER BY amount DESC;
++------------------------------+-----------+
+| customerName                 | amount    |
++------------------------------+-----------+
+| Euro+ Shopping Channel       | 120166.58 |
+| Euro+ Shopping Channel       | 116208.40 |
+| Mini Gifts Distributors Ltd. | 111654.40 |
+| Dragon Souveniers, Ltd.      | 105743.00 |
+| Mini Gifts Distributors Ltd. | 101244.59 |
++------------------------------+-----------+
+5 rows in set (0.00 sec)
+
+i. Tampilkan nilai dari order yang statusnya 'On Hold'
+
+mysql> SELECT SUM(quantityOrdered * priceEach) as Nilai_Order
+    -> FROM orders JOIN orderdetails USING (orderNumber)
+    -> WHERE status = 'On Hold';
++-------------+
+| Nilai_Order |
++-------------+
+|   169575.61 |
++-------------+
+1 row in set (0.00 sec)
+mysql> SELECT orderNumber,SUM(quantityOrdered * priceEach) as Nilai_Order,status
+    -> FROM orders JOIN orderdetails USING (orderNumber)
+    -> WHERE status = 'On Hold'
+    -> GROUP BY orderNumber;
++-------------+-------------+---------+
+| orderNumber | Nilai_Order | status  |
++-------------+-------------+---------+
+|       10334 |    23014.17 | On Hold |
+|       10401 |    43525.04 | On Hold |
+|       10407 |    52229.55 | On Hold |
+|       10414 |    50806.85 | On Hold |
++-------------+-------------+---------+
+4 rows in set (0.00 sec)
+j. Tampilkan jumlah order 'On Hold' untuk tiap customer
+mysql> SELECT customerName,COUNT(*) AS StatusOnHold
+    -> FROM customers JOIN orders USING (customerNumber)
+    -> WHERE status = 'On Hold'
+    -> GROUP BY customerNumber;
++---------------------------+--------------+
+| customerName              | StatusOnHold |
++---------------------------+--------------+
+| Volvo Model Replicas, Co  |            1 |
+| Tekni Collectables Inc.   |            1 |
+| Gifts4AllAges.com         |            1 |
+| The Sharp Gifts Warehouse |            1 |
++---------------------------+--------------+
+4 rows in set (0.01 sec)
+
+26. Many to Many
+a. Tampilkan produk yang terjual berdasarkan order date
+mysql> SELECT orderDate,productName
+    -> FROM products JOIN orderdetails USING(productCode) JOIN orders USING (orderNumber)
+    -> ORDER BY orderDate;
++------------+---------------------------------------------+
+| orderDate  | productName                                 |
++------------+---------------------------------------------+
+| 2003-01-06 | 1917 Grand Touring Sedan                    |
+| 2003-01-06 | 1911 Ford Town Car                          |
+| 2003-01-06 | 1932 Alfa Romeo 8C2300 Spider Sport         |
+| 2003-01-06 | 1936 Mercedes Benz 500k Roadster            |
+| 2003-01-09 | 1932 Model A Ford J-Coupe                   |
+| 2003-01-09 | 1928 Mercedes-Benz SSK                      |
+| 2003-01-09 | 1939 Chevrolet Deluxe Coupe                 |
+| 2005-05-31 | 1958 Chevy Corvette Limited Edition         |
+| 2005-05-31 | 1980’s GM Manhattan Express                 |
+| 2005-05-31 | 1954 Greyhound Scenicruiser                 |
+| 2005-05-31 | Diamond T620 Semi-Skirted Tanker            |
++------------+---------------------------------------------+
+2996 rows in set (0.03 sec)
+NB : Join 3 tabel
+b. Tampilkan semua order atas produk 1940 Ford Pickup Truck
+mysql> SELECT productName,orderNumber,orderDate
+    -> FROM products JOIN orderdetails USING (productCode) JOIN orders USING (orderNumber)
+    -> WHERE productName= '1940 Ford Pickup Truck';
++------------------------+-------------+------------+
+| productName            | orderNumber | orderDate  |
++------------------------+-------------+------------+
+| 1940 Ford Pickup Truck |       10103 | 2003-01-29 |
+| 1940 Ford Pickup Truck |       10113 | 2003-03-26 |
+| 1940 Ford Pickup Truck |       10126 | 2003-05-28 |
+| 1940 Ford Pickup Truck |       10140 | 2003-07-24 |
+| 1940 Ford Pickup Truck |       10150 | 2003-09-19 |
+| 1940 Ford Pickup Truck |       10164 | 2003-10-21 |
+| 1940 Ford Pickup Truck |       10174 | 2003-11-06 |
+| 1940 Ford Pickup Truck |       10183 | 2003-11-13 |
+| 1940 Ford Pickup Truck |       10194 | 2003-11-25 |
+| 1940 Ford Pickup Truck |       10206 | 2003-12-05 |
+| 1940 Ford Pickup Truck |       10215 | 2004-01-29 |
+| 1940 Ford Pickup Truck |       10228 | 2004-03-10 |
+| 1940 Ford Pickup Truck |       10245 | 2004-05-04 |
+| 1940 Ford Pickup Truck |       10258 | 2004-06-15 |
+| 1940 Ford Pickup Truck |       10270 | 2004-07-19 |
+| 1940 Ford Pickup Truck |       10280 | 2004-08-17 |
+| 1940 Ford Pickup Truck |       10291 | 2004-09-08 |
+| 1940 Ford Pickup Truck |       10304 | 2004-10-11 |
+| 1940 Ford Pickup Truck |       10312 | 2004-10-21 |
+| 1940 Ford Pickup Truck |       10322 | 2004-11-04 |
+| 1940 Ford Pickup Truck |       10333 | 2004-11-18 |
+| 1940 Ford Pickup Truck |       10347 | 2004-11-29 |
+| 1940 Ford Pickup Truck |       10357 | 2004-12-10 |
+| 1940 Ford Pickup Truck |       10370 | 2005-01-20 |
+| 1940 Ford Pickup Truck |       10381 | 2005-02-17 |
+| 1940 Ford Pickup Truck |       10391 | 2005-03-09 |
+| 1940 Ford Pickup Truck |       10411 | 2005-05-01 |
+| 1940 Ford Pickup Truck |       10424 | 2005-05-31 |
++------------------------+-------------+------------+
+28 rows in set (0.01 sec)
+c. Tampilkan nama customer dan order number dimana order nya memiliki nilai lebih dari 25000
+mysql> SELECT customerName,orderNumber,SUM(quantityOrdered*priceEach) AS nilaiOrder
+    -> FROM customers JOIN orders USING (customerNumber) JOIN orderDetails USING(orderNumber)
+    -> GROUP BY orderNumber
+    -> HAVING nilaiOrder > 25000;
++------------------------------------+-------------+------------+
+| customerName                       | orderNumber | nilaiOrder |
++------------------------------------+-------------+------------+
+| Baane Mini Imports                 |       10103 |   50218.95 |
+| Euro+ Shopping Channel             |       10104 |   40206.20 |
+| Danish Wholesale Imports           |       10105 |   53959.21 |
+| Rovelli Gifts                      |       10106 |   52151.81 |
+| Cruz & Sons Co.                    |       10108 |   51001.22 |
+| Motor Mint Distributors Inc.       |       10109 |   25833.14 |
+| AV Stores, Co.                     |       10110 |   48425.69 |
+| La Corne D'abondance, Co.          |       10114 |   33383.14 |
+| Dragon Souveniers, Ltd.            |       10117 |   44380.15 |
+| Salzburg Collectables              |       10119 |   35826.33 |
+| Australian Collectors, Co.         |       10120 |   45864.03 |
+| Marseille Mini Autos               |       10122 |   50824.66 |
+| Signal Gift Stores                 |       10124 |   32641.98 |
+| Euro+ Shopping Channel             |       10424 |   29310.30 |
+| La Rochelle Gifts                  |       10425 |   41623.44 |
++------------------------------------+-------------+------------+
+192 rows in set (0.00 sec)
+d. Apakah ada produk yang terdapat disetiap ordernya?
+mysql> SELECT productCode,COUNT(*) AS banyak
+    -> FROM orderdetails
+    -> GROUP BY productCode
+    -> HAVING banyak = (
+    -> SELECT COUNT(*) FROM orders);
+Empty set (0.01 sec)
+NB: Tidak ada produk yang terdapat di setiap order nya
+e. Tampilkan order yang memiliki harga jual kurang dari MSRP nya
+mysql> SELECT orderNumber,productName,priceEach,MSRP
+    -> FROM products
+    -> JOIN orderdetails USING (productCode)
+    -> JOIN orders USING (orderNumber)
+    -> WHERE priceEach < MSRP
+    -> LIMIT 10;
++-------------+-------------------------------------------+-----------+--------+
+| orderNumber | productName                               | priceEach | MSRP   |
++-------------+-------------------------------------------+-----------+--------+
+|       10123 | 1965 Aston Martin DB5                     |    120.71 | 124.44 |
+|       10123 | 1999 Indy 500 Monte Carlo SS              |    114.84 | 132.00 |
+|       10123 | 1948 Porsche Type 356 Roadster            |    117.26 | 141.28 |
+|       10123 | 1966 Shelby Cobra 427 S/C                 |     43.27 |  50.31 |
+|       10298 | 1996 Moto Guzzi 1100i                     |    105.86 | 118.94 |
+|       10345 | 1938 Cadillac V-16 Presidential Limousine |     38.98 |  44.80 |
+|       10124 | 1917 Grand Touring Sedan                  |    153.00 | 170.00 |
+|       10124 | 1911 Ford Town Car                        |     58.12 |  60.54 |
+|       10124 | 1932 Model A Ford J-Coupe                 |    111.87 | 127.13 |
+|       10124 | 1932 Alfa Romeo 8C2300 Spider Sport       |     75.46 |  92.03 |
++-------------+-------------------------------------------+-----------+--------+
+10 rows in set (0.00 sec)
+f. Laporkan produk yang terjual dengan keuntungan  dua kali lipat atau lebih dari 100%
+mysql> SELECT productName,priceEach-buyPrice AS keuntungan,buyPrice
+    -> FROM products JOIN orderdetails USING (productCode)
+    -> WHERE priceEach-buyPrice > buyPrice
+    -> LIMIT 10;
++--------------------------+------------+----------+
+| productName              | keuntungan | buyPrice |
++--------------------------+------------+----------+
+| 1952 Alpine Renault 1300 |     115.72 |    98.58 |
+| 1952 Alpine Renault 1300 |     107.15 |    98.58 |
+| 1952 Alpine Renault 1300 |     113.58 |    98.58 |
+| 1952 Alpine Renault 1300 |     109.29 |    98.58 |
+| 1952 Alpine Renault 1300 |     105.01 |    98.58 |
+| 1952 Alpine Renault 1300 |     105.01 |    98.58 |
+| 1952 Alpine Renault 1300 |     107.15 |    98.58 |
+| 1952 Alpine Renault 1300 |     115.72 |    98.58 |
+| 1952 Alpine Renault 1300 |     107.15 |    98.58 |
+| 1952 Alpine Renault 1300 |     111.43 |    98.58 |
++--------------------------+------------+----------+
+10 rows in set (0.00 sec) 
+g. Tampilkan produk yang terjual pada hari senin/monday
+mysql> SELECT DAYNAME(orderDate),productName
+    -> FROM products JOIN orderdetails USING (productCode) JOIN orders USING (orderNumber)
+    -> WHERE DAYOFWEEK(orderDate) = 2
+    -> LIMIT 10;
++--------------------+-----------------------------------------+
+| DAYNAME(orderDate) | productName                             |
++--------------------+-----------------------------------------+
+| Monday             | 1917 Grand Touring Sedan                |
+| Monday             | 1911 Ford Town Car                      |
+| Monday             | 1932 Alfa Romeo 8C2300 Spider Sport     |
+| Monday             | 1936 Mercedes Benz 500k Roadster        |
+| Monday             | 1980s Black Hawk Helicopter             |
+| Monday             | P-51-D Mustang                          |
+| Monday             | 1999 Yamaha Speed Boat                  |
+| Monday             | 1941 Chevrolet Special Deluxe Cabriolet |
+| Monday             | 1928 British Royal Navy Airplane        |
+| Monday             | 1900s Vintage Bi-Plane                  |
++--------------------+-----------------------------------------+
+10 rows in set (0.00 sec)
+NB : DAYNAME Berfungsi untuk menampilkan nama hari berdasarkan kolom date
+     DAYOFWEEK Berfungsi untuk mencari hari berdasarkan kolom date
+h. Berapa jumlah produk yang masih berstatus 'On Hold'
+mysql> SELECT SUM(quantityOrdered) AS jumlah
+    -> FROM orders JOIN orderdetails USING (orderNumber)
+    -> WHERE status='On Hold';
++--------+
+| jumlah |
++--------+
+|   1994 |
++--------+
+1 row in set (0.00 sec)
+
+		

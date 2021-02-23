@@ -1,0 +1,168 @@
+26. Many to Many
+a. Tampilkan produk yang terjual berdasarkan order date
+mysql> SELECT orderDate,productName
+    -> FROM products JOIN orderdetails USING(productCode) JOIN orders USING (orderNumber)
+    -> ORDER BY orderDate;
++------------+---------------------------------------------+
+| orderDate  | productName                                 |
++------------+---------------------------------------------+
+| 2003-01-06 | 1917 Grand Touring Sedan                    |
+| 2003-01-06 | 1911 Ford Town Car                          |
+| 2003-01-06 | 1932 Alfa Romeo 8C2300 Spider Sport         |
+| 2003-01-06 | 1936 Mercedes Benz 500k Roadster            |
+| 2003-01-09 | 1932 Model A Ford J-Coupe                   |
+| 2003-01-09 | 1928 Mercedes-Benz SSK                      |
+| 2003-01-09 | 1939 Chevrolet Deluxe Coupe                 |
+| 2005-05-31 | 1958 Chevy Corvette Limited Edition         |
+| 2005-05-31 | 1980’s GM Manhattan Express                 |
+| 2005-05-31 | 1954 Greyhound Scenicruiser                 |
+| 2005-05-31 | Diamond T620 Semi-Skirted Tanker            |
++------------+---------------------------------------------+
+2996 rows in set (0.03 sec)
+NB : Join 3 tabel
+b. Tampilkan semua order atas produk 1940 Ford Pickup Truck
+mysql> SELECT productName,orderNumber,orderDate
+    -> FROM products JOIN orderdetails USING (productCode) JOIN orders USING (orderNumber)
+    -> WHERE productName= '1940 Ford Pickup Truck';
++------------------------+-------------+------------+
+| productName            | orderNumber | orderDate  |
++------------------------+-------------+------------+
+| 1940 Ford Pickup Truck |       10103 | 2003-01-29 |
+| 1940 Ford Pickup Truck |       10113 | 2003-03-26 |
+| 1940 Ford Pickup Truck |       10126 | 2003-05-28 |
+| 1940 Ford Pickup Truck |       10140 | 2003-07-24 |
+| 1940 Ford Pickup Truck |       10150 | 2003-09-19 |
+| 1940 Ford Pickup Truck |       10164 | 2003-10-21 |
+| 1940 Ford Pickup Truck |       10174 | 2003-11-06 |
+| 1940 Ford Pickup Truck |       10183 | 2003-11-13 |
+| 1940 Ford Pickup Truck |       10194 | 2003-11-25 |
+| 1940 Ford Pickup Truck |       10206 | 2003-12-05 |
+| 1940 Ford Pickup Truck |       10215 | 2004-01-29 |
+| 1940 Ford Pickup Truck |       10228 | 2004-03-10 |
+| 1940 Ford Pickup Truck |       10245 | 2004-05-04 |
+| 1940 Ford Pickup Truck |       10258 | 2004-06-15 |
+| 1940 Ford Pickup Truck |       10270 | 2004-07-19 |
+| 1940 Ford Pickup Truck |       10280 | 2004-08-17 |
+| 1940 Ford Pickup Truck |       10291 | 2004-09-08 |
+| 1940 Ford Pickup Truck |       10304 | 2004-10-11 |
+| 1940 Ford Pickup Truck |       10312 | 2004-10-21 |
+| 1940 Ford Pickup Truck |       10322 | 2004-11-04 |
+| 1940 Ford Pickup Truck |       10333 | 2004-11-18 |
+| 1940 Ford Pickup Truck |       10347 | 2004-11-29 |
+| 1940 Ford Pickup Truck |       10357 | 2004-12-10 |
+| 1940 Ford Pickup Truck |       10370 | 2005-01-20 |
+| 1940 Ford Pickup Truck |       10381 | 2005-02-17 |
+| 1940 Ford Pickup Truck |       10391 | 2005-03-09 |
+| 1940 Ford Pickup Truck |       10411 | 2005-05-01 |
+| 1940 Ford Pickup Truck |       10424 | 2005-05-31 |
++------------------------+-------------+------------+
+28 rows in set (0.01 sec)
+c. Tampilkan nama customer dan order number dimana order nya memiliki nilai lebih dari 25000
+mysql> SELECT customerName,orderNumber,SUM(quantityOrdered*priceEach) AS nilaiOrder
+    -> FROM customers JOIN orders USING (customerNumber) JOIN orderDetails USING(orderNumber)
+    -> GROUP BY orderNumber
+    -> HAVING nilaiOrder > 25000;
++------------------------------------+-------------+------------+
+| customerName                       | orderNumber | nilaiOrder |
++------------------------------------+-------------+------------+
+| Baane Mini Imports                 |       10103 |   50218.95 |
+| Euro+ Shopping Channel             |       10104 |   40206.20 |
+| Danish Wholesale Imports           |       10105 |   53959.21 |
+| Rovelli Gifts                      |       10106 |   52151.81 |
+| Cruz & Sons Co.                    |       10108 |   51001.22 |
+| Motor Mint Distributors Inc.       |       10109 |   25833.14 |
+| AV Stores, Co.                     |       10110 |   48425.69 |
+| La Corne D'abondance, Co.          |       10114 |   33383.14 |
+| Dragon Souveniers, Ltd.            |       10117 |   44380.15 |
+| Salzburg Collectables              |       10119 |   35826.33 |
+| Australian Collectors, Co.         |       10120 |   45864.03 |
+| Marseille Mini Autos               |       10122 |   50824.66 |
+| Signal Gift Stores                 |       10124 |   32641.98 |
+| Euro+ Shopping Channel             |       10424 |   29310.30 |
+| La Rochelle Gifts                  |       10425 |   41623.44 |
++------------------------------------+-------------+------------+
+192 rows in set (0.00 sec)
+d. Apakah ada produk yang terdapat disetiap ordernya?
+mysql> SELECT productCode,COUNT(*) AS banyak
+    -> FROM orderdetails
+    -> GROUP BY productCode
+    -> HAVING banyak = (
+    -> SELECT COUNT(*) FROM orders);
+Empty set (0.01 sec)
+NB: Tidak ada produk yang terdapat di setiap order nya
+e. Tampilkan order yang memiliki harga jual kurang dari MSRP nya
+mysql> SELECT orderNumber,productName,priceEach,MSRP
+    -> FROM products
+    -> JOIN orderdetails USING (productCode)
+    -> JOIN orders USING (orderNumber)
+    -> WHERE priceEach < MSRP
+    -> LIMIT 10;
++-------------+-------------------------------------------+-----------+--------+
+| orderNumber | productName                               | priceEach | MSRP   |
++-------------+-------------------------------------------+-----------+--------+
+|       10123 | 1965 Aston Martin DB5                     |    120.71 | 124.44 |
+|       10123 | 1999 Indy 500 Monte Carlo SS              |    114.84 | 132.00 |
+|       10123 | 1948 Porsche Type 356 Roadster            |    117.26 | 141.28 |
+|       10123 | 1966 Shelby Cobra 427 S/C                 |     43.27 |  50.31 |
+|       10298 | 1996 Moto Guzzi 1100i                     |    105.86 | 118.94 |
+|       10345 | 1938 Cadillac V-16 Presidential Limousine |     38.98 |  44.80 |
+|       10124 | 1917 Grand Touring Sedan                  |    153.00 | 170.00 |
+|       10124 | 1911 Ford Town Car                        |     58.12 |  60.54 |
+|       10124 | 1932 Model A Ford J-Coupe                 |    111.87 | 127.13 |
+|       10124 | 1932 Alfa Romeo 8C2300 Spider Sport       |     75.46 |  92.03 |
++-------------+-------------------------------------------+-----------+--------+
+10 rows in set (0.00 sec)
+f. Laporkan produk yang terjual dengan keuntungan  dua kali lipat atau lebih dari 100%
+mysql> SELECT productName,priceEach-buyPrice AS keuntungan,buyPrice
+    -> FROM products JOIN orderdetails USING (productCode)
+    -> WHERE priceEach-buyPrice > buyPrice
+    -> LIMIT 10;
++--------------------------+------------+----------+
+| productName              | keuntungan | buyPrice |
++--------------------------+------------+----------+
+| 1952 Alpine Renault 1300 |     115.72 |    98.58 |
+| 1952 Alpine Renault 1300 |     107.15 |    98.58 |
+| 1952 Alpine Renault 1300 |     113.58 |    98.58 |
+| 1952 Alpine Renault 1300 |     109.29 |    98.58 |
+| 1952 Alpine Renault 1300 |     105.01 |    98.58 |
+| 1952 Alpine Renault 1300 |     105.01 |    98.58 |
+| 1952 Alpine Renault 1300 |     107.15 |    98.58 |
+| 1952 Alpine Renault 1300 |     115.72 |    98.58 |
+| 1952 Alpine Renault 1300 |     107.15 |    98.58 |
+| 1952 Alpine Renault 1300 |     111.43 |    98.58 |
++--------------------------+------------+----------+
+10 rows in set (0.00 sec) 
+g. Tampilkan produk yang terjual pada hari senin/monday
+mysql> SELECT DAYNAME(orderDate),productName
+    -> FROM products JOIN orderdetails USING (productCode) JOIN orders USING (orderNumber)
+    -> WHERE DAYOFWEEK(orderDate) = 2
+    -> LIMIT 10;
++--------------------+-----------------------------------------+
+| DAYNAME(orderDate) | productName                             |
++--------------------+-----------------------------------------+
+| Monday             | 1917 Grand Touring Sedan                |
+| Monday             | 1911 Ford Town Car                      |
+| Monday             | 1932 Alfa Romeo 8C2300 Spider Sport     |
+| Monday             | 1936 Mercedes Benz 500k Roadster        |
+| Monday             | 1980s Black Hawk Helicopter             |
+| Monday             | P-51-D Mustang                          |
+| Monday             | 1999 Yamaha Speed Boat                  |
+| Monday             | 1941 Chevrolet Special Deluxe Cabriolet |
+| Monday             | 1928 British Royal Navy Airplane        |
+| Monday             | 1900s Vintage Bi-Plane                  |
++--------------------+-----------------------------------------+
+10 rows in set (0.00 sec)
+NB : DAYNAME Berfungsi untuk menampilkan nama hari berdasarkan kolom date
+     DAYOFWEEK Berfungsi untuk mencari hari berdasarkan kolom date
+h. Berapa jumlah produk yang masih berstatus 'On Hold'
+mysql> SELECT SUM(quantityOrdered) AS jumlah
+    -> FROM orders JOIN orderdetails USING (orderNumber)
+    -> WHERE status='On Hold';
++--------+
+| jumlah |
++--------+
+|   1994 |
++--------+
+1 row in set (0.00 sec)
+
+		

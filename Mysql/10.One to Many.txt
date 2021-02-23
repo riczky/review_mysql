@@ -1,0 +1,228 @@
+25. One Two Many
+a. Tampilkan Sales representatif dari setiap customer
+mysql> SELECT customerName,CONCAT(firstName," ",lastName)AS employeeName
+    -> FROM customers JOIN employees
+    -> ON salesRepEmployeeNumber = employeeNumber;
++------------------------------------+------------------+
+| customerName                       | employeeName     |
++------------------------------------+------------------+
+| Mini Gifts Distributors Ltd.       | Leslie Jennings  |
+| Mini Wheels Co.                    | Leslie Jennings  |
+| Technics Stores Inc.               | Leslie Jennings  |
+| Corporate Gift Ideas Co.           | Leslie Jennings  |
+| The Sharp Gifts Warehouse          | Leslie Jennings  |
+| Signal Collectibles Ltd.           | Leslie Jennings  |
+| Signal Gift Stores                 | Leslie Thompson  |
+| Toys4GrownUps.com                  | Leslie Thompson  |
+| Boards & Toys Co.                  | Leslie Thompson  |
+| Collectable Mini Designs Co.       | Leslie Thompson  |
+| Men 'R' US Retailers, Ltd.         | Leslie Thompson  |
+| West Coast Collectables Co.        | Leslie Thompson  |
+| Cambridge Collectables Co.         | Julie Firrelli   |
+| Online Mini Collectables           | Julie Firrelli   |
+| Mini Creations Ltd.                | Julie Firrelli   |
+| Classic Gift Ideas, Inc            | Julie Firrelli   |
+| Collectables For Less Inc.         | Julie Firrelli   |
+
+b. Tampilkan total pembayaran dari Atelier graphique
+mysql> SELECT SUM(amount)
+    -> FROM customers JOIN payments
+    -> USING (customerNumber)
+    -> WHERE customerName = 'Atelier graphique';
++-------------+
+| SUM(amount) |
++-------------+
+|    22314.36 |
++-------------+
+c. Tampilkan total pembayaran per tanggal
+mysql> SELECT paymentDate,SUM(amount) AS total
+    -> FROM payments
+    -> GROUP BY paymentDate;
++-------------+-----------+
+| paymentDate | total     |
++-------------+-----------+
+| 2003-01-16  |  10223.83 |
+| 2003-01-28  |  10549.01 |
+| 2003-01-30  |   5494.78 |
+| 2003-02-16  |  50218.95 |
+| 2003-02-20  |  53959.21 |
+| 2003-02-25  |  40206.20 |
+| 2003-03-02  |  52151.81 |
+| 2003-03-09  |  51001.22 |
+| 2003-03-12  |  22292.62 |
+| 2003-03-20  |  25833.14 |
+| 2003-03-27  |  48425.69 |
+| 2003-04-09  |  24212.79 |
+| 2003-04-11  |  11044.30 |
+| 2003-04-16  |  21665.98 |
+| 2003-04-19  |   1627.56 |
+| 2003-04-20  |  33383.14 |
+| 2003-04-22  |  44380.15 |
+d. Tampilkan produk yang belum pernah terjual
+Cara pertama : 
+
+mysql> SELECT DISTINCT productCode FROM orderdetails;
++-------------+
+| productCode |
++-------------+
+| S10_1678    |
+| S10_1949    |
+| S10_2016    |
+| S10_4698    |
+| S10_4757    |
+| S10_4962    |
+| S12_1099    |
+| S12_1108    |
+| S12_1666    |
+| S12_2823    |
+| S12_3148    |
+| S12_3380    |
+| S12_3891    |
+| S12_3990    |
+| S72_1253    |
+| S72_3212    |
++-------------+
+109 rows in set (0.08 sec)
+NB : Ada 109 produk yang terjual
+
+mysql> SELECT productCode,productName FROM products
+    -> WHERE productCode NOT IN (
+    -> SELECT DISTINCT productCode FROM orderdetails);
++-------------+-------------------+
+| productCode | productName       |
++-------------+-------------------+
+| S18_3233    | 1985 Toyota Supra |
++-------------+-------------------+
+1 row in set (0.06 sec)
+NB:Produk yang blm pernah terjual adalah Toyota Supra
+
+Cara Kedua:
+mysql> SELECT productCode,productName,orderNumber
+    -> FROM products LEFT JOIN orderdetails
+    -> USING (productCode)
+    -> WHERE orderNumber IS NULL;
++-------------+-------------------+-------------+
+| productCode | productName       | orderNumber |
++-------------+-------------------+-------------+
+| S18_3233    | 1985 Toyota Supra |        NULL |
++-------------+-------------------+-------------+
+1 row in set (0.00 sec)
+e. Tampilkan jumlah yang terbayar per tiap customer
+
+mysql> SELECT customerNumber,customerName,SUM(amount) AS total
+    -> FROM customers JOIN payments USING (customerNumber)
+    -> GROUP BY customerNumber;
++----------------+------------------------------------+-----------+
+| customerNumber | customerName                       | total     |
++----------------+------------------------------------+-----------+
+|            103 | Atelier graphique                  |  22314.36 |
+|            112 | Signal Gift Stores                 |  80180.98 |
+|            114 | Australian Collectors, Co.         | 180585.07 |
+|            119 | La Rochelle Gifts                  | 116949.68 |
+|            121 | Baane Mini Imports                 | 104224.79 |
+|            124 | Mini Gifts Distributors Ltd.       | 584188.24 |
+|            128 | Blauer See Auto, Co.               |  75937.76 |
+|            129 | Mini Wheels Co.                    |  66710.56 |
+|            131 | Land of Toys Inc.                  | 107639.94 |
+|            141 | Euro+ Shopping Channel             | 715738.98 |
+|            144 | Volvo Model Replicas, Co           |  43680.65 |
+|            145 | Danish Wholesale Imports           | 107446.50 |
+|            146 | Saveley & Henriot, Co.             | 130305.35 |
+|            148 | Dragon Souveniers, Ltd.            | 156251.03 |
+|            151 | Muscle Machine Inc                 | 177913.95 |
+|            157 | Diecast Classics Inc.              |  98509.25 |
+|            495 | Diecast Collectables               |  65541.74 |
+|            496 | Kelly's Gift Shop                  | 114497.19 |
++----------------+------------------------------------+-----------+
+98 rows in set (0.00 sec)
+
+f. Berapa Order yang sudah pernah dibuat oleh Herkku Gifts
+mysql> SELECT COUNT(*) AS jumlah_order
+    -> FROM customers JOIN orders USING (customerNumber)
+    -> WHERE customerName = 'Herkku Gifts';
++--------------+
+| jumlah_order |
++--------------+
+|            3 |
++--------------+
+1 row in set (0.08 sec)
+mysql> SELECT orderNumber AS jumlah_order
+    -> FROM customers JOIN orders USING (customerNumber)
+    -> WHERE customerName = 'Herkku Gifts';
++--------------+
+| jumlah_order |
++--------------+
+|        10181 |
+|        10188 |
+|        10289 |
++--------------+
+3 rows in set (0.01 sec)
+g. Tampilkan karyawan di Boston
+mysql> SELECT CONCAT(firstName," ",lastName) AS Nama,city
+    -> FROM employees JOIN offices
+    -> USING (officeCode)
+    -> WHERE city= 'Boston';
++-----------------+--------+
+| Nama            | city   |
++-----------------+--------+
+| Julie Firrelli  | Boston |
+| Steve Patterson | Boston |
++-----------------+--------+
+2 rows in set (0.00 sec)
+
+h. Tampilkan pembayaran atas customer yang lebih dari 100.000, urutkan dari pembayaran yang tertinggi
+mysql> SELECT customerName,amount
+    -> FROM customers JOIN payments
+    -> USING (customerNumber)
+    -> WHERE amount>100000
+    -> ORDER BY amount DESC;
++------------------------------+-----------+
+| customerName                 | amount    |
++------------------------------+-----------+
+| Euro+ Shopping Channel       | 120166.58 |
+| Euro+ Shopping Channel       | 116208.40 |
+| Mini Gifts Distributors Ltd. | 111654.40 |
+| Dragon Souveniers, Ltd.      | 105743.00 |
+| Mini Gifts Distributors Ltd. | 101244.59 |
++------------------------------+-----------+
+5 rows in set (0.00 sec)
+
+i. Tampilkan nilai dari order yang statusnya 'On Hold'
+
+mysql> SELECT SUM(quantityOrdered * priceEach) as Nilai_Order
+    -> FROM orders JOIN orderdetails USING (orderNumber)
+    -> WHERE status = 'On Hold';
++-------------+
+| Nilai_Order |
++-------------+
+|   169575.61 |
++-------------+
+1 row in set (0.00 sec)
+mysql> SELECT orderNumber,SUM(quantityOrdered * priceEach) as Nilai_Order,status
+    -> FROM orders JOIN orderdetails USING (orderNumber)
+    -> WHERE status = 'On Hold'
+    -> GROUP BY orderNumber;
++-------------+-------------+---------+
+| orderNumber | Nilai_Order | status  |
++-------------+-------------+---------+
+|       10334 |    23014.17 | On Hold |
+|       10401 |    43525.04 | On Hold |
+|       10407 |    52229.55 | On Hold |
+|       10414 |    50806.85 | On Hold |
++-------------+-------------+---------+
+4 rows in set (0.00 sec)
+j. Tampilkan jumlah order 'On Hold' untuk tiap customer
+mysql> SELECT customerName,COUNT(*) AS StatusOnHold
+    -> FROM customers JOIN orders USING (customerNumber)
+    -> WHERE status = 'On Hold'
+    -> GROUP BY customerNumber;
++---------------------------+--------------+
+| customerName              | StatusOnHold |
++---------------------------+--------------+
+| Volvo Model Replicas, Co  |            1 |
+| Tekni Collectables Inc.   |            1 |
+| Gifts4AllAges.com         |            1 |
+| The Sharp Gifts Warehouse |            1 |
++---------------------------+--------------+
+4 rows in set (0.01 sec)
+

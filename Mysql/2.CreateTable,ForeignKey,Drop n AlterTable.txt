@@ -1,0 +1,91 @@
+4. Create Table using Sql
+Perintah: - CREATE DATABASE toko;
+	  - use toko
+	  - CREATE TABLE satuan (
+    -> satuanId INT NOT NULL AUTO_INCREMENT,
+    -> satuanNama VARCHAR(30) NOT NULL,
+    -> PRIMARY KEY (satuanId)
+    -> );
+	  - show tables;
+	  - describe satuan;
+Contoh Lain:
+ CREATE DATABASE review
+    -> ;
+Query OK, 1 row affected (0.00 sec)
+
+mysql> show databases;
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| MHS                |
+| database_parkir    |
+| db_mahasiswa       |
+| mysql              |
+| parkir             |
+| performance_schema |
+| review             |
+| seribu_tutorial    |
+| toko               |
+| unusia             |
++--------------------+
+11 rows in set (0.00 sec)
+
+mysql> use review
+Database changed
+mysql> CREATE TABLE bebas (
+    -> bebasId INT NOT NULL AUTO_INCREMENT,
+    -> bebasNama VARCHAR(30) NOT NULL,
+    -> PRIMARY KEY (bebasId)
+    -> );
+Query OK, 0 rows affected (0.22 sec)
+
+mysql> show tables;
++------------------+
+| Tables_in_review |
++------------------+
+| bebas            |
++------------------+
+1 row in set (0.01 sec)
+
+mysql> describe bebas;
++-----------+-------------+------+-----+---------+----------------+
+| Field     | Type        | Null | Key | Default | Extra          |
++-----------+-------------+------+-----+---------+----------------+
+| bebasId   | int(11)     | NO   | PRI | NULL    | auto_increment |
+| bebasNama | varchar(30) | NO   |     | NULL    |                |
++-----------+-------------+------+-----+---------+----------------+
+
+5. Foreign Key
+ CREATE TABLE barang (
+    -> barangId INT NOT NULL AUTO_INCREMENT,
+    -> barangNama VARCHAR(50) NOT NULL,
+    -> harga_beli INT NOT NULL,
+    -> harga_jual INT NOT NULL,
+    -> supplier_id INT,
+    -> satuan_id INT,
+    -> INDEX (supplier_id),
+    -> INDEX (satuan_id),
+    -> FOREIGN KEY (supplier_id) REFERENCES supplier (supplierId)
+    -> ON DELETE RESTRICT ON UPDATE CASCADE,
+    -> FOREIGN KEY (satuan_id) REFERENCES satuan (satuanId)
+    -> ON DELETE RESTRICT ON UPDATE CASCADE,
+    -> PRIMARY KEY (barangId)
+    -> );
+
+NB:	ON DELETE RESTRICT : Table parent tidak bisa dihapus selama msh ada child nya di tabel parent  
+   	ON DELETE CASCADE  : Apabila table parent di hapus maka childnya akan ikut terhapus
+	ON UPDATE RESTRICT : Apabila table parent di update maka akan gagal karna msh ada child nya
+	ON UPDATE CASCADE  : Apabila table parent di update maka child akan ikut terupdate  
+	NOT NULL : Tidak boleh kosong
+	AUTO_INCREMENT : Id diisi secara otomatis berdasarkan nilai terakhir
+
+6. Drop n Alter Table
+Drop untuk menghapus.
+Alter table utk memodifikasi struktur pada tabel
+Perintah: DROP TABLE barang_2; (Fungsinya utk menghapus tabel barang_2 didalam database)
+	  ALTER TABLE barang ADD COLUMN deskripsi TEXT; (Menambah kolom deskripsi pada tabel barang dgn tipe data Text)
+	  ALTER TABLE barang DROP COLUMN deskripsi; (Mengahapus Kolom deskripsi dari tabel barang)  
+	  ALTER TABLE barang ADD COLUMN deskripsi TEXT AFTER barangNama;(Menambah kolom deskripsi pada tabel barang,tipe data Text dgn
+	  meletakkan setelah kolom barangNama) 
+

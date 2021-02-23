@@ -1,0 +1,223 @@
+21. SubQuery
+SubQuery adalah Query yg berada didalam Query lainnya atau biasa juga disebut nested Query
+nested Query biasa digunakan untuk menyelesaikan permasalahan query yang sedikit lebih kompleks
+Contoh: 1.Siapa karyawan yang melaporkan (reportsTo)ke Diane(Misalkan blm tau employeeNumber nya)
+	2.Tampilkan nama produk Classic Cars yang harga belinya di atas rata - rata
+
+1.Siapa karyawan yang melaporkan (reportsTo)ke Diane(Misalkan blm tau employeeNumber nya) 
+mysql> SELECT employeeNumber,firstName,lastName,reportsTo FROM employees;
++----------------+-----------+-----------+-----------+
+| employeeNumber | firstName | lastName  | reportsTo |
++----------------+-----------+-----------+-----------+
+|           1002 | Diane     | Murphy    |      NULL |
+|           1056 | Mary      | Patterson |      1002 |
+|           1076 | Jeff      | Firrelli  |      1002 |
+|           1088 | William   | Patterson |      1056 |
+|           1102 | Gerard    | Bondur    |      1056 |
+|           1143 | Anthony   | Bow       |      1056 |
+|           1165 | Leslie    | Jennings  |      1143 |
+|           1166 | Leslie    | Thompson  |      1143 |
+|           1188 | Julie     | Firrelli  |      1143 |
+|           1216 | Steve     | Patterson |      1143 |
+|           1286 | Foon Yue  | Tseng     |      1143 |
+|           1323 | George    | Vanauf    |      1143 |
+|           1337 | Loui      | Bondur    |      1102 |
+|           1370 | Gerard    | Hernandez |      1102 |
+|           1401 | Pamela    | Castillo  |      1102 |
+|           1501 | Larry     | Bott      |      1102 |
+|           1504 | Barry     | Jones     |      1102 |
+|           1611 | Andy      | Fixter    |      1088 |
+|           1612 | Peter     | Marsh     |      1088 |
+|           1619 | Tom       | King      |      1088 |
+|           1621 | Mami      | Nishi     |      1056 |
+|           1625 | Yoshimi   | Kato      |      1621 |
+|           1702 | Martin    | Gerard    |      1102 |
++----------------+-----------+-----------+-----------+
+23 rows in set (0.06 sec)
+
+mysql> SELECT employeeNumber FROM employees
+    -> WHERE firstName='Diane' AND lastName='Murphy';
++----------------+
+| employeeNumber |
++----------------+
+|           1002 |
++----------------+
+1 row in set (0.00 sec)
+
+mysql> SELECT firstName,lastName
+    -> FROM employees
+    -> WHERE reportsTo IN (
+    -> SELECT employeeNumber FROM employees
+    -> WHERE firstName='Diane' AND lastName='Murphy');
++-----------+-----------+
+| firstName | lastName  |
++-----------+-----------+
+| Mary      | Patterson |
+| Jeff      | Firrelli  |
++-----------+-----------+
+2 rows in set (0.05 sec)
+NB : Membuat SubQuery untuk mem filter kolom reportsTo
+Jika IN maka row nya bisa lebih dari 1 data namun hanya 1 kolom
+jika menggunakan operasi <,=,> maka yg keluar harus 1 kolom 1 rows
+
+2.Tampilkan nama produk Classic Cars yang harga belinya di atas rata - rata
+mysql> SELECT AVG(buyPrice) FROM products
+    -> WHERE productLine='Classic Cars';
++---------------+
+| AVG(buyPrice) |
++---------------+
+|     64.446316 |
++---------------+
+1 row in set (0.08 sec)
+
+mysql> SELECT productName,buyPrice from products
+    -> WHERE productLine='Classic Cars' AND buyPrice > (
+    -> SELECT AVG(buyPrice) FROM products
+    -> WHERE productLine='Classic Cars');
+NB : Contoh penggunaan sub query untuk memfilter nama produk Classic Cars yang harga belinya di atas rata - rata
++-----------------------------------+----------+
+| productName                       | buyPrice |
++-----------------------------------+----------+
+| 1952 Alpine Renault 1300          |    98.58 |
+| 1972 Alfa Romeo GTA               |    85.68 |
+| 1962 LanciaA Delta 16V            |   103.42 |
+| 1968 Ford Mustang                 |    95.34 |
+| 2001 Ferrari Enzo                 |    95.59 |
+| 1969 Corvair Monza                |    89.14 |
+| 1968 Dodge Charger                |    75.16 |
+| 1969 Ford Falcon                  |    83.05 |
+| 1993 Mazda RX-7                   |    83.51 |
+| 1965 Aston Martin DB5             |    65.96 |
+| 1995 Honda Civic                  |    93.89 |
+| 1998 Chrysler Plymouth Prowler    |   101.51 |
+| 1992 Ferrari 360 Spider red       |    77.90 |
+| 1976 Ford Gran Torino             |    73.49 |
+| 1970 Triumph Spitfire             |    91.92 |
+| 1957 Corvette Convertible         |    69.93 |
+| 1952 Citroen-15CV                 |    72.82 |
+| 1956 Porsche 356A Coupe           |    98.30 |
+| 1992 Porsche Cayenne Turbo Silver |    69.78 |
++-----------------------------------+----------+
+19 rows in set (0.00 sec)
+
+22. SubQuery From
+SubQuery tidak hanya bisa digunakan untuk filtering pada where namun bisa juga digunakan sebagai sumber data yang digunakan pada sintaks from
+Contoh Permasalahan : 1. Tampilkan Rata - rata penjualan perbulan tertinggi dan terendah dari tahun 2003
+
+mysql> SELECT MONTH(paymentDate) AS Bulan,MIN(amount) AS Terendah,MAX(amount) AS Tertinggi FROM payments
+    -> WHERE YEAR(paymentDate)=2003
+    -> GROUP BY MONTH(paymentDate);
++-------+----------+-----------+
+| Bulan | Terendah | Tertinggi |
++-------+----------+-----------+
+|     1 |  5494.78 |  10549.01 |
+|     2 | 40206.20 |  53959.21 |ah
+|     3 | 22292.62 |  52151.81 |
+|     4 |  1627.56 |  44380.15 |
+|     5 |  3101.40 |  50824.66 |
+|     6 | 14571.44 |  58841.35 |
+|     7 |  2880.00 |  36251.03 |
+|     8 |  1128.20 | 111654.40 |
+|     9 |  6631.36 |  50342.74 |
+|    10 |  1491.38 |  49539.37 |
+|    11 |  9977.85 |  85559.12 |
+|    12 |  3879.96 | 105743.00 |
++-------+----------+-----------+
+12 rows in set (0.06 sec)
+
+mysql> SELECT AVG(Terendah) AS rata_terendah,AVG(Tertinggi) AS rata_tertinggi
+    -> FROM
+    -> (SELECT MONTH(paymentDate) AS Bulan,MIN(amount) AS Terendah,MAX(amount) AS Tertinggi FROM payments
+    -> WHERE YEAR(paymentDate)=2003
+    -> GROUP BY MONTH(paymentDate)) AS tabel_baru;
++---------------+----------------+
+| rata_terendah | rata_tertinggi |
++---------------+----------------+
+|   9440.229167 |   59149.654167 |
++---------------+----------------+
+1 row in set (0.00 sec)
+NB : Menampilkan Rata - rata penjualan perbulan tertinggi dan terendah dari tahun 2003 Menggunakan SubQuery FROM 
+
+23. View	
+View adalah sebuah virtual tabel pada mysql,dimana virtualnya itu didefinisikan dari sebuah query select pada mysql
+Contoh : Membuat Views untuk menampilkan 10 besar produk terjual.
+
+mysql> SELECT productName,SUM(quantityOrdered) AS jumlah
+    -> FROM products JOIN orderdetails USING (productCode)
+    -> GROUP BY productCode
+    -> ORDER BY jumlah DESC
+    -> LIMIT 10;
++-----------------------------------------+--------+
+| productName                             | jumlah |
++-----------------------------------------+--------+
+| 1992 Ferrari 360 Spider red             |   1808 |
+| 1937 Lincoln Berline                    |   1111 |
+| American Airlines: MD-11S               |   1085 |
+| 1941 Chevrolet Special Deluxe Cabriolet |   1076 |
+| 1930 Buick Marquette Phaeton            |   1074 |
+| 1940s Ford truck                        |   1061 |
+| 1969 Harley Davidson Ultimate Chopper   |   1057 |
+| 1957 Chevy Pickup                       |   1056 |
+| 1964 Mercedes Tour Bus                  |   1053 |
+| 1956 Porsche 356A Coupe                 |   1052 |
++-----------------------------------------+--------+
+10 rows in set (0.14 sec)
+
+mysql> CREATE VIEW top10produk AS
+    -> SELECT productName,SUM(quantityOrdered) AS jumlah
+    -> FROM products JOIN orderdetails USING (productCode)
+    -> GROUP BY productCode
+    -> ORDER BY jumlah DESC
+    -> LIMIT 10;
+Query OK, 0 rows affected (0.06 sec)
+NB: Membuat VIEW dari query SELECT yang telah dibuat
+mysql> SHOW TABLES;
++-------------------------+
+| Tables_in_classicmodels |
++-------------------------+
+| customers               |
+| employees               |
+| offices                 |
+| orderdetails            |
+| orders                  |
+| payments                |
+| productlines            |
+| products                |
+| top10produk             |
++-------------------------+
+9 rows in set (0.00 sec)
+
+mysql> SHOW FULL TABLES;
++-------------------------+------------+
+| Tables_in_classicmodels | Table_type |
++-------------------------+------------+
+| customers               | BASE TABLE |
+| employees               | BASE TABLE |
+| offices                 | BASE TABLE |
+| orderdetails            | BASE TABLE |
+| orders                  | BASE TABLE |
+| payments                | BASE TABLE |
+| productlines            | BASE TABLE |
+| products                | BASE TABLE |
+| top10produk             | VIEW       |
++-------------------------+------------+
+9 rows in set (0.05 sec)
+
+
+mysql> SELECT * FROM top10produk;
++-----------------------------------------+--------+
+| productName                             | jumlah |
++-----------------------------------------+--------+
+| 1992 Ferrari 360 Spider red             |   1808 |
+| 1937 Lincoln Berline                    |   1111 |
+| American Airlines: MD-11S               |   1085 |
+| 1941 Chevrolet Special Deluxe Cabriolet |   1076 |
+| 1930 Buick Marquette Phaeton            |   1074 |
+| 1940s Ford truck                        |   1061 |
+| 1969 Harley Davidson Ultimate Chopper   |   1057 |
+| 1957 Chevy Pickup                       |   1056 |
+| 1964 Mercedes Tour Bus                  |   1053 |
+| 1956 Porsche 356A Coupe                 |   1052 |
++-----------------------------------------+--------+
+10 rows in set (0.00 sec)
+

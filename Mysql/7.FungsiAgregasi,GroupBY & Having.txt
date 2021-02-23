@@ -1,0 +1,396 @@
+18. Fungsi Agregasi
+Fungsi Agregagsi adalah fungsi yg akan melakukan sejumlah kalkulasi kepada sekumpulan data lalu akan dikembalikan sebuah hasil
+biasanya sebuah hasil tersebut adalah sebuah value(single value).
+mysql> select firstName,lastName
+    -> from employees JOIN offices
+    -> USING (officeCode)
+    -> WHERE city='Boston';
++-----------+-----------+
+| firstName | lastName  |
++-----------+-----------+
+| Julie     | Firrelli  |
+| Steve     | Patterson |
++-----------+-----------+
+2 rows in set (0.00 sec)
+a. COUNT
+COUNT(*) Fungsinya untuk menghitung cacah (berapa banyak) data
+Contoh:Menghitung banyak karyawan yang berasal dari boston
+mysql> SELECT COUNT(*)
+    -> from employees JOIN offices
+    -> USING (officeCode)
+    -> WHERE city='Boston';
++----------+
+| COUNT(*) |
++----------+
+|        2 |
++----------+
+1 row in set (0.00 sec)
+
+mysql> SELECT COUNT(*) AS banyakKaryawan
+    -> from employees JOIN offices
+    -> USING (officeCode)
+    -> WHERE city='Boston';
++----------------+
+| banyakKaryawan |
++----------------+
+|              2 |
++----------------+
+1 row in set (0.00 sec)
+NB : COUNT(*) Fungsinya untuk menghitung cacah (berapa banyak) data
+Contoh:Menghitung banyak karyawan yang berasal dari boston
+
+b. SUM
+SUM fungsinya uuntuk menghitung jumlah data
+Contoh:Menghitung jumlah pemasukkan pada tahun 2003
+
+mysql> describe payments;
++----------------+---------------+------+-----+---------+-------+
+| Field          | Type          | Null | Key | Default | Extra |
++----------------+---------------+------+-----+---------+-------+
+| customerNumber | int(11)       | NO   | PRI | NULL    |       |
+| checkNumber    | varchar(50)   | NO   | PRI | NULL    |       |
+| paymentDate    | date          | NO   |     | NULL    |       |
+| amount         | decimal(10,2) | NO   |     | NULL    |       |
++----------------+---------------+------+-----+---------+-------+
+4 rows in set (0.03 sec)
+
+mysql> select amount,paymentDate FROM payments
+    -> WHERE YEAR(paymentDate)=2003;
++-----------+-------------+
+| amount    | paymentDate |
++-----------+-------------+
+|  14571.44 | 2003-06-05  |
+|  32641.98 | 2003-06-06  |
+|  45864.03 | 2003-05-20  |
+|   7565.08 | 2003-05-31  |
+|  50218.95 | 2003-02-16  |
+|   1491.38 | 2003-10-28  |
+|  11044.30 | 2003-04-11  |
+| 111654.40 | 2003-08-15  |
+|  45084.38 | 2003-11-25  |
+|  10549.01 | 2003-01-28  |
+|  24101.81 | 2003-10-18  |
+|  23923.93 | 2003-12-11  |
+|  16537.85 | 2003-04-09  |
+|  22292.62 | 2003-03-12  |
+|  36251.03 | 2003-07-19  |
+|  49539.37 | 2003-10-26  |
+|  40206.20 | 2003-02-25  |
++-----------+-------------|
+NB : YEAR adalah Fungsi utk melihat tahun yg digunakan pada tipe data date
+
+mysql> SELECT SUM(amount) AS jumlah_pembayaran_2003 FROM payments
+    -> WHERE YEAR(paymentDate)=2003;
++------------------------+
+| jumlah_pembayaran_2003 |
++------------------------+
+|             3250217.70 |
++------------------------+
+1 row in set (0.00 sec)
+NB : SUM fungsinya untuk menghitung jumlah pemayaran pada tahun 2003
+
+c. AVG (Average)
+AVG fungsinya untuk menghitung rata - rata nilai
+Contoh:Hitung rata - rata harga beli kendaraan Motorcycles
+
+mysql> describe products;
++--------------------+---------------+------+-----+---------+-------+
+| Field              | Type          | Null | Key | Default | Extra |
++--------------------+---------------+------+-----+---------+-------+
+| productCode        | varchar(15)   | NO   | PRI | NULL    |       |
+| productName        | varchar(70)   | NO   |     | NULL    |       |
+| productLine        | varchar(50)   | NO   | MUL | NULL    |       |
+| productScale       | varchar(10)   | NO   |     | NULL    |       |
+| productVendor      | varchar(50)   | NO   |     | NULL    |       |
+| productDescription | text          | NO   |     | NULL    |       |
+| quantityInStock    | smallint(6)   | NO   |     | NULL    |       |
+| buyPrice           | decimal(10,2) | NO   |     | NULL    |       |
+| MSRP               | decimal(10,2) | NO   |     | NULL    |       |
++--------------------+---------------+------+-----+---------+-------+
+9 rows in set (0.03 sec)
+
+mysql> SELECT AVG(buyPrice) AS rata_harga_motor
+    -> FROM products
+    -> WHERE productLine = 'Motorcycles';
++------------------+
+| rata_harga_motor |
++------------------+
+|        50.685385 |
++------------------+
+1 row in set (0.00 sec)
+NB : AVG Menghitung rata - rata harga motor pada produk Motorcycles 
+
+d. MIN 
+MIN fungsinya untuk mencari minimum nilai
+Contoh:Harga jual produk paling murah
+
+mysql> SELECT MIN(MSRP) FROM products;
++-----------+
+| MIN(MSRP) |
++-----------+
+|     33.19 |
++-----------+
+1 row in set (0.05 sec)
+NB : MSRP = Harga Jual
+
+e. MAX
+MAX fungsinya untuk mencari maksimum nilai 
+Contoh: Harga jual produk Classic Cars paling mahal
+
+mysql> SELECT MAX(MSRP) FROM products
+    -> WHERE productLine = 'Classic Cars';
++-----------+
+| MAX(MSRP) |
++-----------+
+|    214.30 |
++-----------+
+1 row in set (0.00 sec)
+NB  : MSRP = Harga Jual
+
+19. GroupBy
+GroupBy biasa digunakan untuk mengelompokkan data berdasarkan kolom tertentu
+Fungsi GroupBy biasa digunakan bersama fungsi agregasi
+
+a. Menggunakan Count(*)
+mysql> SELECT city,firstName,lastName
+    -> FROM employees JOIN offices
+    -> USING (officeCode);
++---------------+-----------+-----------+
+| city          | firstName | lastName  |
++---------------+-----------+-----------+
+| San Francisco | Diane     | Murphy    |
+| San Francisco | Mary      | Patterson |
+| San Francisco | Jeff      | Firrelli  |
+| San Francisco | Anthony   | Bow       |
+| San Francisco | Leslie    | Jennings  |
+| San Francisco | Leslie    | Thompson  |
+| Boston        | Julie     | Firrelli  |
+| Boston        | Steve     | Patterson |
+| NYC           | Foon Yue  | Tseng     |
+| NYC           | George    | Vanauf    |
+| Paris         | Gerard    | Bondur    |
+| Paris         | Loui      | Bondur    |
+| Paris         | Gerard    | Hernandez |
+| Paris         | Pamela    | Castillo  |
+| Paris         | Martin    | Gerard    |
+| Tokyo         | Mami      | Nishi     |
+| Tokyo         | Yoshimi   | Kato      |
+| Sydney        | William   | Patterson |
+| Sydney        | Andy      | Fixter    |
+| Sydney        | Peter     | Marsh     |
+| Sydney        | Tom       | King      |
+| London        | Larry     | Bott      |
+| London        | Barry     | Jones     |
++---------------+-----------+-----------+
+23 rows in set (0.00 sec)
+
+mysql> SELECT city,COUNT(*) AS banyak_karyawan
+    -> FROM employees JOIN offices
+    -> USING (officeCode)
+    -> GROUP BY city;
++---------------+-----------------+
+| city          | banyak_karyawan |
++---------------+-----------------+
+| Boston        |               2 |
+| London        |               2 |
+| NYC           |               2 |
+| Paris         |               5 |
+| San Francisco |               6 |
+| Sydney        |               4 |
+| Tokyo         |               2 |
++---------------+-----------------+
+7 rows in set (0.00 sec)
+NB : Mengelompokkan data city menggunakan COUNT(*)
+b. Menggunakan SUM
+mysql> describe payments;
++----------------+---------------+------+-----+---------+-------+
+| Field          | Type          | Null | Key | Default | Extra |
++----------------+---------------+------+-----+---------+-------+
+| customerNumber | int(11)       | NO   | PRI | NULL    |       |
+| checkNumber    | varchar(50)   | NO   | PRI | NULL    |       |
+| paymentDate    | date          | NO   |     | NULL    |       |
+| amount         | decimal(10,2) | NO   |     | NULL    |       |
++----------------+---------------+------+-----+---------+-------+
+4 rows in set (0.00 sec)
+
+mysql> SELECT YEAR(paymentDate),amount FROM payments;
+NB : Mengambil data tahun menggunakan fungsi YEAR pada kolom paymentDate
++-------------------+-----------+
+| YEAR(paymentDate) | amount    |
++-------------------+-----------+
+|              2004 |   6066.78 |
+|              2003 |  14571.44 |
+|              2004 |   1676.14 |
+|              2004 |  14191.12 |
+|              2003 |  32641.98 |
+|              2004 |  33347.88 |
+|              2003 |  45864.03 |
+|              2004 |  82261.22 |
+|              2003 |   7565.08 |
+|              2004 |  44894.74 |
+|              2004 |  19501.82 |
+|              2004 |  47924.19 |
+|              2005 |  49523.67 |
+|              2003 |  50218.95 |
+|              2003 |   1491.38 |
+|              2004 |  17876.32 |
+|              2004 |  34638.14 |
+|              2005 | 101244.59 |
+|              2004 |  85410.87 |
+
+mysql> SELECT YEAR(paymentDate) AS Tahun,SUM(amount) AS jumlah_pemasukan
+    -> FROM payments
+    -> GROUP BY YEAR(paymentDate);
++-------+------------------+
+| Tahun | jumlah_pemasukan |
++-------+------------------+
+|  2003 |       3250217.70 |
+|  2004 |       4313328.25 |
+|  2005 |       1290293.28 |
++-------+------------------+
+NB: Menghitung jumlah pemasukan berdasarkan tahun menggunakan fungsi SUM
+c.Menggunakan AVG
+
+mysql> describe products;
++--------------------+---------------+------+-----+---------+-------+
+| Field              | Type          | Null | Key | Default | Extra |
++--------------------+---------------+------+-----+---------+-------+
+| productCode        | varchar(15)   | NO   | PRI | NULL    |       |
+| productName        | varchar(70)   | NO   |     | NULL    |       |
+| productLine        | varchar(50)   | NO   | MUL | NULL    |       |
+| productScale       | varchar(10)   | NO   |     | NULL    |       |
+| productVendor      | varchar(50)   | NO   |     | NULL    |       |
+| productDescription | text          | NO   |     | NULL    |       |
+| quantityInStock    | smallint(6)   | NO   |     | NULL    |       |
+| buyPrice           | decimal(10,2) | NO   |     | NULL    |       |
+| MSRP               | decimal(10,2) | NO   |     | NULL    |       |
++--------------------+---------------+------+-----+---------+-------+
+9 rows in set (0.01 sec)
+
+mysql> SELECT productLine,buyPrice FROM products;
++------------------+----------+
+| productLine      | buyPrice |
++------------------+----------+
+| Motorcycles      |    48.81 |
+| Classic Cars     |    98.58 |
+| Motorcycles      |    68.99 |
+| Motorcycles      |    91.02 |
+| Classic Cars     |    85.68 |
+| Classic Cars     |   103.42 |
+| Classic Cars     |    95.34 |
+| Classic Cars     |    95.59 |
+| Trucks and Buses |    77.90 |
+| Motorcycles      |    66.27 |
+| Classic Cars     |    89.14 |
+| Classic Cars     |    75.16 |
+| Classic Cars     |    83.05 |
+| Classic Cars     |    31.92 |
+| Trucks and Buses |    55.70 |
+
+mysql> SELECT productLine,avg(buyPrice) FROM products
+    -> GROUP BY productLine;
++------------------+---------------+
+| productLine      | avg(buyPrice) |
++------------------+---------------+
+| Classic Cars     |     64.446316 |
+| Motorcycles      |     50.685385 |
+| Planes           |     49.629167 |
+| Ships            |     47.007778 |
+| Trains           |     43.923333 |
+| Trucks and Buses |     56.329091 |
+| Vintage Cars     |     46.066250 |
++------------------+---------------+
+7 rows in set (0.00 sec)
+NB : Menghitung rata" (avg)buyPrice dengan mengelompokan data (GROUP BY)productLine
+d. Menggunakan MIN
+
+mysql> SELECT productLine,MIN(buyPrice) FROM products
+    -> GROUP BY productLine;
++------------------+---------------+
+| productLine      | MIN(buyPrice) |
++------------------+---------------+
+| Classic Cars     |         15.91 |
+| Motorcycles      |         24.14 |
+| Planes           |         29.34 |
+| Ships            |         33.30 |
+| Trains           |         26.72 |
+| Trucks and Buses |         24.92 |
+| Vintage Cars     |         20.61 |
++------------------+---------------+
+7 rows in set (0.00 sec)
+NB : Menghitung harga Minimum (MIN)buyPrice dengan mengelompoka data (GROUP BY)productLine
+e. Menggunakan MAX
+mysql> describe payments;
++----------------+---------------+------+-----+---------+-------+
+| Field          | Type          | Null | Key | Default | Extra |
++----------------+---------------+------+-----+---------+-------+
+| customerNumber | int(11)       | NO   | PRI | NULL    |       |
+| checkNumber    | varchar(50)   | NO   | PRI | NULL    |       |
+| paymentDate    | date          | NO   |     | NULL    |       |
+| amount         | decimal(10,2) | NO   |     | NULL    |       |
++----------------+---------------+------+-----+---------+-------+
+4 rows in set (0.03 sec)
+
+mysql> SELECT YEAR(paymentDate) AS Tahun,MAX(amount) AS pembayaran_terbesar
+    -> FROM payments
+    -> GROUP BY YEAR(paymentDate);
++-------+---------------------+
+| Tahun | pembayaran_terbesar |
++-------+---------------------+
+|  2003 |           111654.40 |
+|  2004 |           116208.40 |
+|  2005 |           120166.58 |
++-------+---------------------+
+3 rows in set (0.00 sec)
+NB : Menghitung pembayaran terbesar(MAX)amount dengan mengelompokan data (GROUP BY) berdasarkan Tahun YEAR(paymentDate)
+
+20. Having
+Having adalah filtering yang dilakukan setelah query diatasnya dijalankan
+Contoh soal: Hitung jumlah pemasukan pada tahun 2003 di setiap bulannya yang kurang dari 150.000
+
+mysql> describe payments;
++----------------+---------------+------+-----+---------+-------+
+| Field          | Type          | Null | Key | Default | Extra |
++----------------+---------------+------+-----+---------+-------+
+| customerNumber | int(11)       | NO   | PRI | NULL    |       |
+| checkNumber    | varchar(50)   | NO   | PRI | NULL    |       |
+| paymentDate    | date          | NO   |     | NULL    |       |
+| amount         | decimal(10,2) | NO   |     | NULL    |       |
++----------------+---------------+------+-----+---------+-------+
+4 rows in set (0.03 sec)
+mysql> SELECT MONTH(paymentDate) AS bulan,SUM(amount) AS jumlah FROM payments
+    -> WHERE YEAR(paymentDate)=2003
+    -> GROUP BY MONTH(paymentDate);
++-------+-----------+
+| bulan | jumlah    |
++-------+-----------+
+|     1 |  26267.62 |
+|     2 | 144384.36 |
+|     3 | 199704.48 |
+|     4 | 136313.92 |
+|     5 | 159881.97 |
+|     6 | 180218.98 |
+|     7 | 158247.00 |
+|     8 | 246204.86 |
+|     9 | 161206.23 |
+|    10 | 316857.96 |
+|    11 | 694292.68 |
+|    12 | 826637.64 |
++-------+-----------+
+12 rows in set (0.00 sec)
+NB : Menghitung jumlah pemasukan pada tahun 2003 di setiap bulannya
+     MONTH fungsi mysql untuk menghitung bulan pada tipe data date
+
+mysql> SELECT MONTH(paymentDate) AS bulan,SUM(amount) AS jumlah FROM payments
+    -> WHERE YEAR(paymentDate)=2003
+    -> GROUP BY MONTH(paymentDate)
+    -> HAVING jumlah<150000;
++-------+-----------+
+| bulan | jumlah    |
++-------+-----------+
+|     1 |  26267.62 |
+|     2 | 144384.36 |
+|     4 | 136313.92 |
++-------+-----------+
+3 rows in set (0.00 sec)
+NB : Menghitung jumlah pemasukan pada tahun 2003 di setiap bulannya yang kurang dari 150.000
